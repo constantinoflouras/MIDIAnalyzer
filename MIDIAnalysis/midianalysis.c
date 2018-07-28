@@ -161,8 +161,6 @@ void * findBlocks(FILE * file)
             }
 
             block_size += representation * pow(16, 8 - 1 - nibble_pos);
-
-            //printf("For byte %x, found a: %d\n", nibble, representation);
         }
 
 
@@ -174,7 +172,8 @@ void * findBlocks(FILE * file)
             block_num, &buffer[0],
             buffer[4], buffer[5], buffer[6], buffer[7],block_size);
 
-        break;
+        fseek(file, block_size, SEEK_CUR);
+        block_num++;
     }
 
 }
