@@ -8,10 +8,19 @@
 #include <errno.h>
 #include <math.h>
 
+// The following is a new STRUCT that will define a MIDI block.
+struct MIDIBlock
+{
+    char header[4];                                                             // Four byte header that identifies the type that this block is (for example, 'MTrk' or 'MThd')
+    int size;                                                                   // How large the memory allocated block is.
+    char * data;                                                                // Pointer to the raw data (which is of a variable size)
+};
+
 // Function prototypes
 FILE * initialize_file(int * argc, char * argv[]);
 int test_file_if_midi(FILE * file);
 void * findBlocks(FILE * file);
+int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int ** size);
 
 // Global variables
 FILE * midi_file_input;                                                         // Declare the midi_file_input variable
@@ -32,7 +41,7 @@ int main(int argc, char * argv[])
 
 
     // At this point, this file is a MIDI file. Now, we can do some interesting analysis...
-    findBlocks(midi_file_input);
+    grabBlocks(midi_file_input, NULL, NULL);
 }
 
 FILE * initialize_file(int * argc, char * argv[])
@@ -138,10 +147,9 @@ void * findBlocks(FILE * file)
 
         int bytes_read = fread(&buffer[0], 1, 8, file);                         // Now, we'll go ahead and read in the first eight bytes of this file.
         if (bytes_read < 8)
-            continue;   // See if we error out from reaching the end of the file.
+            continue;                                                           // See if we error out from reaching the end of the file.
 
-        // get block size
-        int block_size = 0;
+        int block_size = 0;                                                     // We'll go ahead and figure out the block size.
         int offset = 4; // starting point for where the size is
         int nibble_pos = 0;
         for (; nibble_pos < 8; nibble_pos++)
@@ -176,4 +184,126 @@ void * findBlocks(FILE * file)
         block_num++;
     }
 
+    // We need to return a pointer!
+    return 0;
+}
+
+int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int ** size)
+{
+    // For my programs, it is standard practice to restore the original file position, unless it is explicit what the function is doing.
+    long file_originalPosition = ftell(file);
+
+    // Before we begin, we need to grab the beginning and end of the file. This will tell us when we've reached the end of
+    // the file later on.
+
+    fseek(file, 0, SEEK_END);                                                   // Seek to the end of the file, so that we can grab the size.
+    long file_size = ftell(file);                                               // Store the size of the file (in bytes) into this variable.
+    fseek(file, 0, SEEK_SET);                                                   // Go to the beginning of the file, in preparation for block seeking.
+
+    struct Node                                                                 // So, the idea is that we're going to create an 'internal' linked list of MIDIBlock structs
+    {                                                                           // as we go, and then convert it to an array of MIDIBlocks after we seek through the entire file.
+        struct Node * nextNode;                                                 // Why do this? We're trying to eliminate the number of disk seeks-- I want to do this entirely in memory.
+        struct MIDIBlock * midiBlock;
+    };
+
+    struct Node * initialNode = malloc(sizeof(struct Node));                    // The initial node is where we're going to start reading from when we process the data.
+    struct Node * currentNode = initialNode;                                    // The current node is where we're going to write to next. Right now, it's the initial node.
+
+    while (ftell(file) < file_size)
+    {
+        static int block_num = 0;
+        unsigned char buffer[8];                                                // We want a new buffer for each and every run.
+
+        int buffer_pos = 0;                                                     // Wipe the buffer-- remember that C does not guarantee that
+        for (; buffer_pos < 8; buffer_pos++)                                    // this memory space will be all zeroes. This is important!
+            buffer[buffer_pos]='\0';
+
+        int bytes_read = fread(&buffer[0], 1, 8, file);                         // Now, we'll go ahead and read in the first eight bytes of this file.
+        if (bytes_read < 8)
+        {
+            printf("[WARNING: grabBlocks()] %s%d%s\n",                          // If for whatever reason we didn't read all eight bytes, there's a chance
+                "Attempted to read 8 bytes from file, read ",                   // that we're misaligned with the contents of the file. That means that we're
+                bytes_read,                                                     // effectively reading garbage, and that's not particularly good.
+                " bytes. There is a possiblity for data misalignment!");
+            continue;                                                           // See if we error out from reaching the end of the file.
+        }
+
+        int block_size = 0;                                                     // We'll go ahead and figure out the block size.
+        int offset = 4; // starting point for where the size is
+        int nibble_pos = 0;
+        for (; nibble_pos < 8; nibble_pos++)
+        {
+            unsigned char nibble = buffer[offset+(nibble_pos/2)];
+            nibble = (nibble_pos % 2 == 0) ? nibble >> 4 : nibble & 0x0F;
+            int representation = -1;
+            switch(nibble)
+            {
+                case 'A': representation = 10; break;
+                case 'B': representation = 11; break;
+                case 'C': representation = 12; break;
+                case 'D': representation = 13; break;
+                case 'E': representation = 14; break;
+                case 'F': representation = 15; break;
+                default: representation = nibble; break;
+            }
+
+            block_size += representation * pow(16, 8 - 1 - nibble_pos);
+        }
+
+
+        // Now, we'll compare the first four chars, and if that's a match,
+        // we'll also go ahead and grab the size.
+
+
+        printf("Block #%d:\n\tType: %.4s\n\tSize: %02x %02x %02x %02x\n\tSize (decimal): %d\n\n",
+            block_num, &buffer[0],
+            buffer[4], buffer[5], buffer[6], buffer[7],block_size);
+
+        /*
+            // The following is a new STRUCT that will define a MIDI block.
+            struct MIDIBlock
+            {
+                char header[4];                                                             // Four byte header that identifies the type that this block is (for example, 'MTrk' or 'MThd')
+                int size;                                                                   // How large the memory allocated block is.
+                void * data;                                                                // Pointer to the raw data (which is of a variable size)
+            };
+        */
+
+        // Instead of fseek(ing), we're actually going to fread directly into the block of memory that will contain this node.
+        (*currentNode).midiBlock = malloc(sizeof(struct MIDIBlock));
+        (*currentNode).nextNode = malloc(sizeof(struct Node));
+        strncpy((*(*currentNode).midiBlock).header, buffer, 4);                 // Set the char[] header
+        (*(*currentNode).midiBlock).size = block_size;                          // Set the block size
+        (*(*currentNode).midiBlock).data = malloc(block_size);                  // Allocate space for the data to go.
+
+        fread((*(*currentNode).midiBlock).data, block_size, 1, file);
+
+        block_num++;
+        currentNode = (*currentNode).nextNode;
+
+    }
+
+    // TESTING CODE (TO BE REMOVED)
+    currentNode = initialNode;
+
+    int block_counter_two = 0;
+    while ((*currentNode).nextNode != NULL)
+    {
+        printf("BLOCK %d:\n", block_counter_two);
+        printf("\tTYPE: %.4s\n", (*(*currentNode).midiBlock).header);
+        printf("\tSIZE: %d\n", (*(*currentNode).midiBlock).size);
+        printf("\tDATA: \n\t");
+
+        int data_counter = 0;
+        for (; data_counter < (*(*currentNode).midiBlock).size; data_counter++)
+        {
+            printf("%02X %s", (unsigned char) ((*(*currentNode).midiBlock).data)[data_counter],
+                    data_counter % 16 == 15 ? "\n\t" : "");
+        }
+        printf("\n");
+        block_counter_two++;
+        currentNode = (*currentNode).nextNode;
+    }
+
+    return 0;
 }
