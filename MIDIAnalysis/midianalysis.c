@@ -8,8 +8,7 @@
 #include <errno.h>
 #include <math.h>
 
-// The following is a new STRUCT that will define a MIDI block.
-struct MIDIBlock
+struct MIDIBlock                                                                // The following is a new struct that will define a MIDI block.
 {
     char header[4];                                                             // Four byte header that identifies the type that this block is (for example, 'MTrk' or 'MThd')
     int size;                                                                   // How large the memory allocated block is.
@@ -20,7 +19,7 @@ struct MIDIBlock
 FILE * initialize_file(int * argc, char * argv[]);
 int test_file_if_midi(FILE * file);
 void * findBlocks(FILE * file);
-int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int ** size);
+int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size);
 
 // Global variables
 FILE * midi_file_input;                                                         // Declare the midi_file_input variable
@@ -40,8 +39,16 @@ int main(int argc, char * argv[])
     printf("Is a MIDI file? %s\n", isMidi ? "Yes" : "No");
 
 
+
+    struct MIDIBlock * pointer;
+
     // At this point, this file is a MIDI file. Now, we can do some interesting analysis...
-    grabBlocks(midi_file_input, NULL, NULL);
+    grabBlocks(midi_file_input, &pointer, NULL);
+
+
+
+
+
 }
 
 FILE * initialize_file(int * argc, char * argv[])
@@ -188,7 +195,7 @@ void * findBlocks(FILE * file)
     return 0;
 }
 
-int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int ** size)
+int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
 {
     // For my programs, it is standard practice to restore the original file position, unless it is explicit what the function is doing.
     long file_originalPosition = ftell(file);
@@ -203,15 +210,15 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int ** size)
     struct Node                                                                 // So, the idea is that we're going to create an 'internal' linked list of MIDIBlock structs
     {                                                                           // as we go, and then convert it to an array of MIDIBlocks after we seek through the entire file.
         struct Node * nextNode;                                                 // Why do this? We're trying to eliminate the number of disk seeks-- I want to do this entirely in memory.
-        struct MIDIBlock * midiBlock;
+        struct MIDIBlock midiBlock;
     };
 
     struct Node * initialNode = malloc(sizeof(struct Node));                    // The initial node is where we're going to start reading from when we process the data.
     struct Node * currentNode = initialNode;                                    // The current node is where we're going to write to next. Right now, it's the initial node.
 
+    int block_num = 0;
     while (ftell(file) < file_size)
     {
-        static int block_num = 0;
         unsigned char buffer[8];                                                // We want a new buffer for each and every run.
 
         int buffer_pos = 0;                                                     // Wipe the buffer-- remember that C does not guarantee that
@@ -270,39 +277,59 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int ** size)
         */
 
         // Instead of fseek(ing), we're actually going to fread directly into the block of memory that will contain this node.
-        (*currentNode).midiBlock = malloc(sizeof(struct MIDIBlock));
         (*currentNode).nextNode = malloc(sizeof(struct Node));
-        strncpy((*(*currentNode).midiBlock).header, buffer, 4);                 // Set the char[] header
-        (*(*currentNode).midiBlock).size = block_size;                          // Set the block size
-        (*(*currentNode).midiBlock).data = malloc(block_size);                  // Allocate space for the data to go.
+        strncpy(((*currentNode).midiBlock).header, buffer, 4);                 // Set the char[] header
+        (*currentNode).midiBlock.size = block_size;                          // Set the block size
+        (*currentNode).midiBlock.data = malloc(block_size);                  // Allocate space for the data to go.
 
-        fread((*(*currentNode).midiBlock).data, block_size, 1, file);
+        fread(((*currentNode).midiBlock).data, block_size, 1, file);
 
         block_num++;
         currentNode = (*currentNode).nextNode;
+        (*currentNode).nextNode = NULL;                                         // We haven't found another block to put into the linked list, so this should be NULL.
 
     }
 
-    // TESTING CODE (TO BE REMOVED)
+
+        // The purpose of this code was to test whether not I was actually storing the contents of the
+        // MIDI file within memory. This appears to have been successful, so I think we're in good shape.
+
+        currentNode = initialNode;
+
+        int block_counter_two = 0;
+        while ((*currentNode).nextNode != NULL)
+        {
+            printf("BLOCK %d:\n", block_counter_two);
+            printf("\tTYPE: %.4s\n", ((*currentNode).midiBlock).header);
+            printf("\tSIZE: %d\n", ((*currentNode).midiBlock).size);
+            printf("\tDATA: \n\t");
+
+            int data_counter = 0;
+            for (; data_counter < ((*currentNode).midiBlock).size; data_counter++)
+            {
+                printf("%02X %s", (unsigned char) (((*currentNode).midiBlock).data)[data_counter],
+                        data_counter % 16 == 15 ? "\n\t" : "");
+            }
+            printf("\n");
+            block_counter_two++;
+            currentNode = (*currentNode).nextNode;
+        }
+
+
+    // Now, we need to convert the linked list of MIDIBlocks into an array. We'll convert that here.
+    // Reset the currentNode to the original initialNode
     currentNode = initialNode;
 
-    int block_counter_two = 0;
-    while ((*currentNode).nextNode != NULL)
+    (*midiBlocks) = malloc(sizeof(struct MIDIBlock) * block_num);
+    int block_counter_arr = 0;
+    while (currentNode != NULL)
     {
-        printf("BLOCK %d:\n", block_counter_two);
-        printf("\tTYPE: %.4s\n", (*(*currentNode).midiBlock).header);
-        printf("\tSIZE: %d\n", (*(*currentNode).midiBlock).size);
-        printf("\tDATA: \n\t");
+        (*midiBlocks)[block_counter_arr] = (*currentNode).midiBlock;
 
-        int data_counter = 0;
-        for (; data_counter < (*(*currentNode).midiBlock).size; data_counter++)
-        {
-            printf("%02X %s", (unsigned char) ((*(*currentNode).midiBlock).data)[data_counter],
-                    data_counter % 16 == 15 ? "\n\t" : "");
-        }
-        printf("\n");
-        block_counter_two++;
         currentNode = (*currentNode).nextNode;
+        free(initialNode);
+        initialNode = currentNode;
+        block_counter_arr++;
     }
 
     return 0;
