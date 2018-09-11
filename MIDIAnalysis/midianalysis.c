@@ -20,6 +20,7 @@ FILE * initialize_file(int * argc, char * argv[]);
 int test_file_if_midi(FILE * file);
 void * findBlocks(FILE * file);
 int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size);
+int freeBlocks(struct MIDIBlock ** midiBlocks, int number_of_blocks);
 
 // Global variables
 FILE * midi_file_input;                                                         // Declare the midi_file_input variable
@@ -40,11 +41,14 @@ int main(int argc, char * argv[])
 
 
 
-    struct MIDIBlock * pointer;
+    struct MIDIBlock * my_MIDI_blocks;
+    int my_MIDI_blocks_size = 0;
 
     // At this point, this file is a MIDI file. Now, we can do some interesting analysis...
-    grabBlocks(midi_file_input, &pointer, NULL);
+    grabBlocks(midi_file_input, &my_MIDI_blocks, &my_MIDI_blocks_size);
+    freeBlocks(&my_MIDI_blocks, my_MIDI_blocks_size);
 
+    fclose(midi_file_input);
 
 
 
@@ -254,7 +258,7 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
                 default: representation = nibble; break;
             }
 
-            block_size += representation * pow(16, 8 - 1 - nibble_pos);
+            block_size += representation * pow(16, 8 - 1 - nibble_pos);         // This algorithm converts the hexadecimal numbers to binary!
         }
 
 
@@ -291,36 +295,36 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
     }
 
 
-        // The purpose of this code was to test whether not I was actually storing the contents of the
-        // MIDI file within memory. This appears to have been successful, so I think we're in good shape.
+    // The purpose of this code was to test whether not I was actually storing the contents of the
+    // MIDI file within memory. This appears to have been successful, so I think we're in good shape.
 
-        currentNode = initialNode;
+    currentNode = initialNode;
 
-        int block_counter_two = 0;
-        while ((*currentNode).nextNode != NULL)
+    int block_counter_two = 0;
+    while ((*currentNode).nextNode != NULL)
+    {
+        printf("BLOCK %d:\n", block_counter_two);
+        printf("\tTYPE: %.4s\n", ((*currentNode).midiBlock).header);
+        printf("\tSIZE: %d\n", ((*currentNode).midiBlock).size);
+        printf("\tDATA: \n\t");
+
+        int data_counter = 0;
+        for (; data_counter < ((*currentNode).midiBlock).size; data_counter++)
         {
-            printf("BLOCK %d:\n", block_counter_two);
-            printf("\tTYPE: %.4s\n", ((*currentNode).midiBlock).header);
-            printf("\tSIZE: %d\n", ((*currentNode).midiBlock).size);
-            printf("\tDATA: \n\t");
-
-            int data_counter = 0;
-            for (; data_counter < ((*currentNode).midiBlock).size; data_counter++)
-            {
-                printf("%02X %s", (unsigned char) (((*currentNode).midiBlock).data)[data_counter],
-                        data_counter % 16 == 15 ? "\n\t" : "");
-            }
-            printf("\n");
-            block_counter_two++;
-            currentNode = (*currentNode).nextNode;
+            printf("%02X %s", (unsigned char) (((*currentNode).midiBlock).data)[data_counter],
+                    data_counter % 16 == 15 ? "\n\t" : "");
         }
+        printf("\n");
+        block_counter_two++;
+        currentNode = (*currentNode).nextNode;
+    }
 
 
     // Now, we need to convert the linked list of MIDIBlocks into an array. We'll convert that here.
     // Reset the currentNode to the original initialNode
     currentNode = initialNode;
 
-    (*midiBlocks) = malloc(sizeof(struct MIDIBlock) * block_num);
+    *midiBlocks = (struct MIDIBlock *) malloc(sizeof(struct MIDIBlock) * block_num);
     int block_counter_arr = 0;
     while (currentNode != NULL)
     {
@@ -331,6 +335,17 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
         initialNode = currentNode;
         block_counter_arr++;
     }
-
+    *size = block_counter_arr;
+    free(initialNode);
     return 0;
+}
+
+int freeBlocks(struct MIDIBlock ** midiBlocks, int number_of_blocks)
+{
+    int counter = 0;
+    for (; counter < number_of_blocks; counter++)
+    {
+        free(((*midiBlocks)[counter]).data);
+    }
+    free(*midiBlocks);
 }
