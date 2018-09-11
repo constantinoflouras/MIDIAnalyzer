@@ -324,9 +324,9 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
     // Reset the currentNode to the original initialNode
     currentNode = initialNode;
 
-    *midiBlocks = (struct MIDIBlock *) malloc(sizeof(struct MIDIBlock) * block_num);
+    *midiBlocks = (struct MIDIBlock *) malloc((sizeof(struct MIDIBlock) + sizeof(struct MIDIBlock *)) * block_num);
     int block_counter_arr = 0;
-    while (currentNode != NULL)
+    while ((*currentNode).nextNode != NULL)
     {
         (*midiBlocks)[block_counter_arr] = (*currentNode).midiBlock;
 
@@ -343,6 +343,9 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
 int freeBlocks(struct MIDIBlock ** midiBlocks, int number_of_blocks)
 {
     int counter = 0;
+    // Why do we need the minus one?
+    // As it turns out, we're actually assuming (which could be wrong!) that there's
+    // another block at the end.. but in reality, there isn't.
     for (; counter < number_of_blocks; counter++)
     {
         free(((*midiBlocks)[counter]).data);
