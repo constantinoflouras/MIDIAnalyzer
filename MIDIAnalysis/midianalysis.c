@@ -7,12 +7,13 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#include <fcntl.h>
 
 struct MIDIBlock                                                                // The following is a new struct that will define a MIDI block.
 {
-    char header[4];                                                             // Four byte header that identifies the type that this block is (for example, 'MTrk' or 'MThd')
+    unsigned char header[4];                                                             // Four byte header that identifies the type that this block is (for example, 'MTrk' or 'MThd')
     int size;                                                                   // How large the memory allocated block is.
-    char * data;                                                                // Pointer to the raw data (which is of a variable size)
+    unsigned char * data;                                                                // Pointer to the raw data (which is of a variable size)
 };
 
 // Function prototypes
@@ -21,6 +22,7 @@ int test_file_if_midi(FILE * file);
 void * findBlocks(FILE * file);
 int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size);
 int freeBlocks(struct MIDIBlock ** midiBlocks, int number_of_blocks);
+void process_bytes(unsigned char * byteString, int number_of_bytes);
 
 // Global variables
 FILE * midi_file_input;                                                         // Declare the midi_file_input variable
@@ -46,13 +48,125 @@ int main(int argc, char * argv[])
 
     // At this point, this file is a MIDI file. Now, we can do some interesting analysis...
     grabBlocks(midi_file_input, &my_MIDI_blocks, &my_MIDI_blocks_size);
-    freeBlocks(&my_MIDI_blocks, my_MIDI_blocks_size);
 
+    // Alright, now let's go ahead and open a MIDI device...
+    int fd = open("/dev/midi3", O_WRONLY, 0);
+    if (fd < 0)
+    {
+        // Couldn't open the MIDI device.
+        printf("[WARNING] Couldn't open the MIDI device!");
+        //exit(1);
+    }
+
+    // Now, we'll go ahead and just grab one block.
+    process_bytes((my_MIDI_blocks[1].data), (my_MIDI_blocks[1].size));
+
+    char myStr[] = {0xFF, 0x7F};
+    printf("\ntestingBytes:\n");
+    process_bytes(myStr, 2);
+
+
+
+
+
+
+    // Closing the blocks...
+    freeBlocks(&my_MIDI_blocks, my_MIDI_blocks_size);
     fclose(midi_file_input);
 
 
 
 
+}
+void process_bytes(unsigned char * byte_seq, int num_bytes)
+{
+    int byte_cnt = 0;
+    while (byte_cnt < num_bytes)
+    {
+        int delta_length = 0;
+        while ( ((byte_seq[byte_cnt]) & (1<<7)) != 0)
+        {
+            printf("The most significant bit is NOT 0.\n");
+            delta_length = (delta_length << 8) + (byte_seq[byte_cnt]);
+            byte_cnt++;
+            // Add it to the
+        }
+        printf("The most significant bit IS 0 (finally!)\n");
+        delta_length = (delta_length << 7) + (byte_seq[byte_cnt]);
+        printf("Final result: %d", delta_length);
+        break;
+        /*
+        // <delta-time><event>
+        // Find the delta-time for this event.
+        unsigned int delta_length = 0;
+        while ( (byte_seq[byte_cnt] & (1<<7)) != 0)
+        {
+            printf("analyze: %d\n", byte_seq[byte_cnt]);
+            printf("binary: %d\n", byte_seq[byte_cnt] & (1<<7));
+            delta_length = delta_length + ((byte_seq[byte_cnt]) << 8);
+            printf("delta_length(byte %d): %d", byte_cnt, delta_length);
+            byte_cnt++;
+        }
+
+        printf("delta_length: %d", delta_length);
+        printf("sizeof(int")
+        break;
+        */
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
+        switch(byte_seq[byte_cnt])
+        {
+            case 0x00:
+                // No operation, skip byte
+                break;
+            case 0xFF:
+                // Meta-events
+                byte_cnt++;
+                switch(byte_seq[byte_cnt]<<8 | byte_seq[byte_cnt+1])
+                {
+                    case 0x5405:
+                        //valid?
+                        printf("Found the SMPTE case!");
+                        byte_cnt = byte_cnt + 5;
+                        break;
+                    default:
+                        break;
+                };
+                break;  // end meta-event;
+            case 0xFF:
+            default:
+                break;
+                //Unimplemented sequence
+        };
+        */
+    }
+
+
+    /*
+    int i = 0;
+    for (; i < number_of_bytes; i++)
+    {
+        printf("%02x ", (unsigned char) byteString[i]);
+    }
+
+    i = 0;
+    for (; i < number_of_bytes; i++)
+    {
+        if (byteString[i] == 0xFF)
+            printf("%d-%02x\n", i, (unsigned char) byteString[i]);
+    }
+    */
 }
 
 FILE * initialize_file(int * argc, char * argv[])
@@ -123,6 +237,7 @@ int test_file_if_midi(FILE * file)
 
     char mthd_indicator[4];                                                     // Now, we should read the first four bytes of the file and see if it matches
     int bytes_read = fread(&mthd_indicator[0], 1, 4, file);                     // with the following: MThd.
+    if (bytes_read);
 
     returnStatus = (strncmp("MThd", mthd_indicator, 4) == 0) ? 1 : 0;           // We'll go ahead and compare the first four bytes of the file to what should be
     fseek(file, origFilePosition, SEEK_SET);
@@ -195,6 +310,7 @@ void * findBlocks(FILE * file)
         block_num++;
     }
 
+    fseek(file, file_originalPosition, SEEK_SET);
     // We need to return a pointer!
     return 0;
 }
@@ -282,7 +398,7 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
 
         // Instead of fseek(ing), we're actually going to fread directly into the block of memory that will contain this node.
         (*currentNode).nextNode = malloc(sizeof(struct Node));
-        strncpy(((*currentNode).midiBlock).header, buffer, 4);                 // Set the char[] header
+        strncpy( (char *) ((*currentNode).midiBlock).header, (char *) buffer, 4);                 // Set the char[] header
         (*currentNode).midiBlock.size = block_size;                          // Set the block size
         (*currentNode).midiBlock.data = malloc(block_size);                  // Allocate space for the data to go.
 
@@ -324,7 +440,7 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
     // Reset the currentNode to the original initialNode
     currentNode = initialNode;
 
-    *midiBlocks = (struct MIDIBlock *) malloc((sizeof(struct MIDIBlock) + sizeof(struct MIDIBlock *)) * block_num);
+    *midiBlocks = (struct MIDIBlock *) malloc((sizeof(struct MIDIBlock) /*+ sizeof(struct MIDIBlock *)*/) * block_num);
     int block_counter_arr = 0;
     while ((*currentNode).nextNode != NULL)
     {
@@ -338,6 +454,8 @@ int grabBlocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
     *size = block_counter_arr;
     free(initialNode);
     return 0;
+
+    fseek(file, file_originalPosition, SEEK_SET);                           // Return to the file's original position
 }
 
 int freeBlocks(struct MIDIBlock ** midiBlocks, int number_of_blocks)
@@ -351,4 +469,6 @@ int freeBlocks(struct MIDIBlock ** midiBlocks, int number_of_blocks)
         free(((*midiBlocks)[counter]).data);
     }
     free(*midiBlocks);
+
+    return 0;
 }
