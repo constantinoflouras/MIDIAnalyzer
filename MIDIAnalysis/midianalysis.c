@@ -8,6 +8,10 @@
 #include <errno.h>
 #include <math.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+#include "midi_parse.h"
 
 struct MIDIBlock                                                                // The following is a new struct that will define a MIDI block.
 {
@@ -49,22 +53,15 @@ int main(int argc, char * argv[])
     // At this point, this file is a MIDI file. Now, we can do some interesting analysis...
     grabBlocks(midi_file_input, &my_MIDI_blocks, &my_MIDI_blocks_size);
 
-    // Alright, now let's go ahead and open a MIDI device...
-    int fd = open("/dev/midi3", O_WRONLY, 0);
-    if (fd < 0)
-    {
-        // Couldn't open the MIDI device.
-        printf("[WARNING] Couldn't open the MIDI device!");
-        //exit(1);
-    }
+
 
     // Now, we'll go ahead and just grab one block.
-    process_bytes((my_MIDI_blocks[1].data), (my_MIDI_blocks[1].size));
+    process_bytes((my_MIDI_blocks[2].data), (my_MIDI_blocks[2].size));
 
-    char myStr[] = {0xFF, 0x7F};
-    printf("\ntestingBytes:\n");
-    process_bytes(myStr, 2);
-
+    /*
+    unsigned char myStr[] = {0xFF, 0x7F, 0x00, 0x00};
+    process_bytes(myStr, 4);
+    */
 
 
 
@@ -80,21 +77,52 @@ int main(int argc, char * argv[])
 }
 void process_bytes(unsigned char * byte_seq, int num_bytes)
 {
+    // Alright, now let's go ahead and open a MIDI device...
+
+    int fd = open("/dev/midi3", O_WRONLY, 0);
+    if (fd < 0)
+    {
+        // Couldn't open the MIDI device.
+        printf("[WARNING] Couldn't open the MIDI device!");
+        //exit(1);
+    }
+
     int byte_cnt = 0;
+    int last_delta_time = 0;
     while (byte_cnt < num_bytes)
     {
-        int delta_length = 0;
-        while ( ((byte_seq[byte_cnt]) & (1<<7)) != 0)
+        // The general format for each event in MIDI is the following:
+        // <delta_time><event_bytes>
+
+        // Find the <delta_time>
+        int delta_time;
+        int delta_time_bytes_read = midi_parse_varSize(&byte_seq[byte_cnt], &delta_time);
+        printf("[%d],%d: ", byte_cnt, delta_time);
+        if (delta_time_bytes_read)
+            byte_cnt += delta_time_bytes_read;
+
+        //printf("MIDI Event:\n\tdelta-time:%d\n", delta_time);
+        unsigned char buffer[3]  = {'\0','\0','\0'};
+        // Now, find the event itself.
+        int event_type_bytes_read = midi_parse_eventType(&byte_seq[byte_cnt], buffer);
+        if (event_type_bytes_read)
         {
-            printf("The most significant bit is NOT 0.\n");
-            delta_length = (delta_length << 8) + (byte_seq[byte_cnt]);
-            byte_cnt++;
-            // Add it to the
+            byte_cnt += event_type_bytes_read;
         }
-        printf("The most significant bit IS 0 (finally!)\n");
-        delta_length = (delta_length << 7) + (byte_seq[byte_cnt]);
-        printf("Final result: %d", delta_length);
-        break;
+        int firstOne = 0;
+        printf("\t %3s", buffer);
+        int delay = 0;
+        for (; delay < last_delta_time; delay++)
+        {
+            int tst = 0;
+            if (firstOne)
+                for (; tst < 500000; tst++);
+            firstOne = 1;
+        }
+        write(fd, buffer, 3);
+        last_delta_time = delta_time;
+
+
         /*
         // <delta-time><event>
         // Find the delta-time for this event.
