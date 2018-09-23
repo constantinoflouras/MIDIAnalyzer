@@ -1,22 +1,25 @@
-#OBJS specifies which files to compile as part of the project
-OBJS = midi_parse.c midianalysis.c 
+EXE = midianalysis
 
-#CC specifies which compiler we're using
-CC = gcc
+SRC_DIR = src
+OBJ_DIR = obj
 
-#COMPILER_FLAGS specifies the additional compilation options we're using
-# -w suppresses all warnings
-COMPILER_FLAGS = -Wall -std=c99
+SRC = $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-#DEBUG_STATEMENTS specifies any debug statements we want to add
-DEBUG_STATEMENTS = -DDEBUG
+CPPFLAGS += -Iinclude
+CFLAGS += -g -Wall
+LDFLAGS += -Llib
+LDLIBS += -lm
 
-#LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lm
+.PHONY: all clean
 
-#OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = midianalysis
+all: $(EXE)
 
-#This is the target that compiles our executable
-all : $(OBJS)
-	$(CC) $(OBJS) $(COMPILER_FLAGS) $(DEBUG_STATEMENTS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+$(EXE): $(OBJ)
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+clean:
+	$(RM) $(OBJ)
