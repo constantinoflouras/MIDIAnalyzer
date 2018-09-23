@@ -110,6 +110,11 @@ int midi_parse_getEvent(unsigned char * buffer, int buffer_size, unsigned char *
                     byte_cntr += 1;
                     switch(byte_seq[byte_cntr])
                     {
+                        case 0x2F:
+                            // This signifies the end of the track
+                            // Force a return of 0.
+                            byte_cntr = 0;
+                            break;
                         case 0x00:
                         case 0x01:
                         case 0x02:
@@ -119,7 +124,6 @@ int midi_parse_getEvent(unsigned char * buffer, int buffer_size, unsigned char *
                         case 0x06:
                         case 0x07:
                         case 0x20:
-                        case 0x2F:
                         case 0x51:
                         case 0x54:
                         case 0x58:

@@ -16,11 +16,24 @@
 #include "midi_reader.h"
 #include "midi_parse.h"
 
+// Structs
+struct MIDIBlockStatus
+{
+    unsigned char * data;
+    int dataSize;       // Size of the data.
+    int isPlaying;      // Boolean representation of whether playing is complete
+    int deltaTicks;     // Number of ticks to count down until next note played.
+    int currentPos;     // Current position in the bytes (aka, byte offset)
+};
 
 /*
     Function prototypes
 */
 int initialize_file(int argc, char * argv[], FILE ** midi_file);
+int MIDIBlockStatus_isPlaying(struct MIDIBlockStatus * midi_block_status, int count);
+int MIDIBlockStatus_updateDeltaTime(struct MIDIBlockStatus * midi_block_status);
+
+
 
 int main(int argc, char * argv[])
 {
@@ -60,27 +73,37 @@ int main(int argc, char * argv[])
     // Each block has its own instructions that need to run simultaneously.
     // To emulate how this works, we'll simply need to switch between the
     // blocks simultaneously.
-    struct MIDIBlockStatus
-    {
-        unsigned char * data;
-        int isPlaying;      // Boolean representation of whether playing is complete
-        int deltaTicks;     // Number of ticks to count down until next note played.
-        int currentPos;     // Current position in the bytes (aka, byte offset)
-    };
-
     struct MIDIBlockStatus mBlockStatus[midi_block_array_size];
 
+    // The following for loop will initialize the MIDIBlockStatus struct array
+    // with the proper initial values. The main program loop works in conjunction
+    // with the MIDIBlock array.
     int midi_block_status_cnt = 0;
     for (; midi_block_status_cnt < midi_block_array_size; midi_block_status_cnt++)
     {
-        // mBlockStatus[midi_block_status_cnt].block = midi_block_array[midi_block_status_cnt];
-        mBlockStatus[midi_block_status_cnt].isPlaying = 1;
         mBlockStatus[midi_block_status_cnt].data =
-            (midi_block_array[midi_block_status_cnt]).data;
-        mBlockStatus[midi_block_status_cnt].deltaTicks = 0;
-        mBlockStatus[midi_block_status_cnt].currentPos = 0;
+            (midi_block_array[midi_block_status_cnt]).data; // Pointer to the data
+        mBlockStatus[midi_block_status_cnt].dataSize =
+            (midi_block_array[midi_block_status_cnt]).size; // Size of the data chunk
+        mBlockStatus[midi_block_status_cnt].isPlaying = 1;  // Marks whether we've reached the end of the block
+        mBlockStatus[midi_block_status_cnt].deltaTicks = 0; // How many ticks are required until we can continue playing notes
+        mBlockStatus[midi_block_status_cnt].currentPos = 0; // The current position (in bytes) for our memory location. Aka, an offset.
 
-        // Update the next delta time of the MIDI block
+        int deltaBytesRead = MIDIBlockStatus_updateDeltaTime(&mBlockStatus[midi_block_status_cnt]);
+        if (!deltaBytesRead)
+        {
+            // Something has gone wrong-- we shouldn't have read in zero bytes.
+            // Maybe we hit the end of the file?
+            // Disable this channel, and pass along a warning.
+            mBlockStatus[midi_block_status_cnt].isPlaying = 0;
+            printf("[WARNING] Block #%d appears to be corrupt. This channel will no longer play from this point on.\n", midi_block_status_cnt);
+        }
+        else
+        {
+            mBlockStatus[midi_block_status_cnt].currentPos += deltaBytesRead;
+        }
+        /*
+        // Grab the initial delta-time of the next block.
         int deltaDelta = 0;
         int deltaDeltaBytes = midi_parse_varSize(&(mBlockStatus[midi_block_status_cnt].data[mBlockStatus[midi_block_status_cnt].currentPos]), &deltaDelta);
 
@@ -89,7 +112,15 @@ int main(int argc, char * argv[])
             mBlockStatus[midi_block_status_cnt].currentPos += deltaDeltaBytes;
             mBlockStatus[midi_block_status_cnt].deltaTicks += deltaDelta;
         }
-
+        else
+        {
+            // For whatever reason, the size itself was zero bytes-- that means something
+            // has gone horribly wrong. We should break, and disable this channel
+            // in particular for the time being.
+            mBlockStatus[midi_block_status_cnt].isPlaying = 0;
+            printf("[WARNING] Block #%d appears to be corrupt. This channel will no longer play from this point on.");
+        }
+        */
         int cntr = 0;
         printf("MIDI BLOCK %d:\n\n", midi_block_status_cnt);
         for (; cntr < midi_block_array[midi_block_status_cnt].size; cntr++)
@@ -98,18 +129,37 @@ int main(int argc, char * argv[])
         }
     }
 
-    while(/*1*/ mBlockStatus[2].isPlaying == 1 )
+    int totalNumberOfTicks = 0;
+    while(MIDIBlockStatus_isPlaying(mBlockStatus, midi_block_status_cnt))
     {
-        // Start the timer
+        // Initialize the timer.
+        // This is so the events are appropriately spaced out.
         clock_t startTime = clock();
 
+        // tick header
+        int tickHeaderShown = 0;
         midi_block_status_cnt = 1;
         for (; midi_block_status_cnt < midi_block_array_size; midi_block_status_cnt++)
         {
             if (mBlockStatus[midi_block_status_cnt].isPlaying)
             {
-                while(mBlockStatus[midi_block_status_cnt].deltaTicks <= 0)
+                while(mBlockStatus[midi_block_status_cnt].deltaTicks <= 0 && mBlockStatus[midi_block_status_cnt].isPlaying)
                 {
+                    if (!tickHeaderShown)
+                    {
+                        tickHeaderShown = 1;
+                        printf("----TICK #%d----\n", totalNumberOfTicks);
+                        printf("isPlaying: ");
+                        int cntr_temp = 0;
+                        for (; cntr_temp < midi_block_array_size; cntr_temp++)
+                        {
+                            if (mBlockStatus[cntr_temp].isPlaying)
+                            {
+                                printf("[%d]", cntr_temp);
+                            }
+                        }
+                        printf("\n");
+                    }
                     #define EVENT_BUFFER_SIZE 32
                     // Create a buffer for the MIDI command to go into.
                     unsigned char buffer[EVENT_BUFFER_SIZE];
@@ -123,7 +173,8 @@ int main(int argc, char * argv[])
                         mBlockStatus[midi_block_status_cnt].isPlaying = 0;
                         break;  // Reached the end of the block
                     }
-                    printf("MIDI EVENT: ");
+
+                    printf("[EVENT--Block #%d] Offset: %d; Data: ", midi_block_status_cnt, mBlockStatus[midi_block_status_cnt].currentPos);
                     int cntr=0;
                     for (; cntr < bytes_read; cntr++)
                     {
@@ -131,26 +182,23 @@ int main(int argc, char * argv[])
                     }
                     printf("\n");
 
+
                     write(fd_midi_dev, &buffer[0], bytes_read);
 
                     // Update the next delta time of the MIDI block
-                    int deltaDelta = 0;
-                    int deltaDeltaBytes = midi_parse_varSize(&(mBlockStatus[midi_block_status_cnt].data[mBlockStatus[midi_block_status_cnt].currentPos]), &deltaDelta);
-
-                    if (deltaDeltaBytes)
+                    int deltaBytesRead = MIDIBlockStatus_updateDeltaTime(&mBlockStatus[midi_block_status_cnt]);
+                    if (!deltaBytesRead)
                     {
-                        mBlockStatus[midi_block_status_cnt].currentPos += deltaDeltaBytes;
-                        mBlockStatus[midi_block_status_cnt].deltaTicks += deltaDelta;
+                        // Something has gone wrong-- we shouldn't have read in zero bytes.
+                        // Maybe we hit the end of the file?
+                        // Disable this channel, and pass along a warning.
+                        mBlockStatus[midi_block_status_cnt].isPlaying = 0;
+                        printf("[WARNING] Block #%d appears to be corrupt. This channel will no longer play from this point on.\n", midi_block_status_cnt);
                     }
                     else
                     {
-                        printf("ERROR--Read in zero bytes for variable length!");
-                        break;
+                        mBlockStatus[midi_block_status_cnt].currentPos += deltaBytesRead;
                     }
-                }
-                if (mBlockStatus[midi_block_status_cnt].deltaTicks % 100 == 0)
-                {
-                    printf("Counting down ticks... currently at: %d...\n", mBlockStatus[midi_block_status_cnt].deltaTicks);
                 }
 
                 // Make sure this only runs ONCE per block. We only want one tick to run per loop!
@@ -158,7 +206,30 @@ int main(int argc, char * argv[])
             }
         }
 
-        while ( (double) (clock() - startTime) < 500);
+        totalNumberOfTicks++;
+        // This little segment of code ensures that we don't play the MIDI
+        // too quickly. Maybe one day, this could be adjustable at runtime?
+        if (totalNumberOfTicks > 125000 && totalNumberOfTicks <= 131071)
+        {
+            while ( (double) (clock() - startTime) < 2500);
+        }
+
+        if (totalNumberOfTicks > 131071)
+        {
+            printf("----TICK #%d----\n", totalNumberOfTicks);
+            printf("isPlaying: ");
+            int cntr_temp = 0;
+            for (; cntr_temp < midi_block_array_size; cntr_temp++)
+            {
+                if (mBlockStatus[cntr_temp].isPlaying)
+                {
+                    printf("[%d]", cntr_temp);
+                }
+            }
+            printf("\n");
+            getchar();
+        }
+
     }
 
 
@@ -185,10 +256,59 @@ int main(int argc, char * argv[])
 
 
 
+/*
+    Function: int MIDIBlockStatus_isPlaying(MIDIBlockStatus * midi_block_status, int count)
+    Description:
+        Will return the number of currently playing MIDI tracks.
+*/
+int MIDIBlockStatus_isPlaying(struct MIDIBlockStatus * midi_block_status, int count)
+{
+    int isPlaying = 0;
+    int incr = 0;
+    for (; incr < count; incr++)
+    {
+        isPlaying += midi_block_status[incr].isPlaying;
+    }
 
+    return isPlaying;
+}
 
+/*
+    Function: int MIDIBlockStatus_updateDeltaTime(struct MIDIBlockStatus * midi_block_status)
+    Description:
+        Updates the delta-time, based on the currentPos of the block passed.
+        Returns the number of bytes read for the time-- should throw an error if
+        the file limit has been reached.
+*/
+int MIDIBlockStatus_updateDeltaTime(struct MIDIBlockStatus * midi_block_status)
+{
+    if ((*midi_block_status).currentPos >= (*midi_block_status).dataSize)
+    {
+        // Reached the end of the MIDIBlock. Do not attempt to read
+        // in any more bytes-- errors and/or overflow into unwanted memory
+        // will occur!
+        return 0;
+    }
 
+    // Grab the initial delta-time of the next block.
+    int deltaDelta = 0;
+    int deltaDeltaBytes = midi_parse_varSize(
+        &((*midi_block_status).data[(*midi_block_status).currentPos]), &deltaDelta);
 
+    // If bytes were actually read from the file, report back to this block.
+    if (deltaDeltaBytes)
+    {
+        (*midi_block_status).deltaTicks += deltaDelta;
+    }
+    else
+    {
+        // Something weird happened, and we should return 0.
+        return 0;
+    }
+
+    // Return the number of bytes that was read.
+    return deltaDeltaBytes;
+}
 
 
 
