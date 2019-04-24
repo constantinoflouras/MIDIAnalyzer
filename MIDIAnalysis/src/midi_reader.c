@@ -35,7 +35,7 @@ void process_bytes(unsigned char * byte_seq, int num_bytes)
 {
     // Alright, now let's go ahead and open a MIDI device...
 
-    int fd = open("/dev/midi3", O_WRONLY, 0);
+    int fd = open("/dev/midi2", O_WRONLY, 0);
     if (fd < 0)
     {
         // Couldn't open the MIDI device.

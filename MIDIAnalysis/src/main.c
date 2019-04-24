@@ -1,3 +1,5 @@
+/*! @file */
+
 /*
     Name: Constantino Flouras
     Date: September 22nd, 2018
@@ -26,19 +28,63 @@ struct MIDIBlockStatus
     int currentPos;     // Current position in the bytes (aka, byte offset)
 };
 
-/*
-    Function prototypes
-*/
+/*  Function prototypes     */
 int initialize_file(int argc, char * argv[], FILE ** midi_file);
 int MIDIBlockStatus_isPlaying(struct MIDIBlockStatus * midi_block_status, int count);
 int MIDIBlockStatus_updateDeltaTime(struct MIDIBlockStatus * midi_block_status);
 
+/*!
+    Handles all arguments passed into the program. Success means that the
+    program would be ready to execute.
+
+    @param argc int representing number of arguments
+    @param argv pointer to the argument array
+    @param file pointer to a file descriptor
+    @param dev  pointer to a device descriptor
+    @return An int representing success (0) or failure (positive)
+ */
+int process_args(int argc, char * argv[], int * file, int * dev)
+{
+    /*  Internal counter for us to keep track of
+        which argument we're processing.    */
+    int cntr = 0;
+
+    /*  Every single argument that is passed will be
+        read and considered-- but if we run out out of
+        arguments, then we'll have an issue.    */
+    while (cntr < argc)
+    {
+        if (!strncmp("--mididev=", argv[cntr], 10))
+        {
+            printf("[DEBUG: %s] Opening the following file: %s\n", __func__, &(argv[cntr][10]));
+            *file = open(&(argv[cntr][10]), O_WRONLY, 0);
+            printf("[DEBUG: %s] The resulting FD number was: %d\n", __func__, *file);
+        }
+        cntr++;
+    }
+    return 0;
+}
 
 
+
+
+
+
+
+
+
+
+/*!
+   \brief Main entry point for the application.
+*/
 int main(int argc, char * argv[])
 {
-    // Let's go ahead and open the MIDI file.
-    int fd_midi_dev = open("/dev/midi3", O_WRONLY, 0);
+
+    // Let's go ahead and open the MIDI file.int * dev
+    int fd_midi_dev;
+    process_args(argc, argv, &fd_midi_dev, NULL);
+
+
     if (fd_midi_dev < 0)
     {
         // Couldn't open the MIDI device.
