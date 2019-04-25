@@ -17,6 +17,7 @@
 #include <time.h>
 #include "midi_reader.h"
 #include "midi_parse.h"
+#include "debug.h"
 
 // Structs
 struct MIDIBlockStatus
@@ -43,7 +44,7 @@ int MIDIBlockStatus_updateDeltaTime(struct MIDIBlockStatus * midi_block_status);
     @param dev  pointer to a device descriptor
     @return An int representing success (0) or failure (positive)
  */
-int process_args(int argc, char * argv[], int * file, int * dev)
+int process_args(int argc, char * argv[], FILE ** file, int * dev)
 {
     /*  Internal counter for us to keep track of
         which argument we're processing.    */
@@ -56,9 +57,17 @@ int process_args(int argc, char * argv[], int * file, int * dev)
     {
         if (!strncmp("--mididev=", argv[cntr], 10))
         {
-            printf("[DEBUG: %s] Opening the following file: %s\n", __func__, &(argv[cntr][10]));
-            *file = open(&(argv[cntr][10]), O_WRONLY, 0);
-            printf("[DEBUG: %s] The resulting FD number was: %d\n", __func__, *file);
+            /*  This is the MIDI device that we'd like to output to.   */
+            DEBUG("Opening the following device: %s\n", &(argv[cntr][10]));
+            *dev = open(&(argv[cntr][10]), O_WRONLY, 0);
+            DEBUG("[DEBUG: %s] The resulting FD number was: %d\n", *dev);
+        }
+        else if (cntr == (argc-1))
+        {
+            /*  In an ideal situation, this would be the file itself.   */
+            DEBUG("Opening the following MIDI file: %s\n", argv[cntr]);
+            *file = fopen(argv[cntr], "rb");
+            DEBUG("Opening the file was %s.\n", (*file == NULL) ? "unsuccessful--an error occurred" : "successful");
         }
         cntr++;
     }
@@ -82,7 +91,9 @@ int main(int argc, char * argv[])
 
     // Let's go ahead and open the MIDI file.int * dev
     int fd_midi_dev;
-    process_args(argc, argv, &fd_midi_dev, NULL);
+    // Create a MIDI file.
+    FILE * midi_file;
+    process_args(argc, argv, &midi_file, &fd_midi_dev);
 
 
     if (fd_midi_dev < 0)
@@ -91,6 +102,8 @@ int main(int argc, char * argv[])
         printf("[WARNING] Couldn't open the MIDI device!");
         exit(1);
     }
+
+    exit(1);
     /*
     printf("[NOTICE] MIDI device is open!\n");
     char bytes[] = {0x90, 0x35, 0x39};
@@ -99,13 +112,10 @@ int main(int argc, char * argv[])
 
 
 
-    // Create a MIDI file.
-    FILE * midi_file;
+
 
     // Attempt to initialize the MIDI file, whether or not that's from the
     // command line argument, or a name specified at runtime.
-    if (initialize_file(argc, argv, &midi_file))
-        return -1;
     printf("[main()] File has been initialized, %p\n", &midi_file);
 
     // Create an array of MIDIBlocks, as defined by the MIDI reader.
@@ -378,16 +388,7 @@ int initialize_file(int argc, char * argv[], FILE ** midi_file)
     for (;filename_wiper < sizeof(filename); filename_wiper++)
         filename[filename_wiper] = '\0';
 
-    if (argc > 1)                                                              // If an argument was specified, we'll go ahead and input it automagically into the
-    {                                                                           // variable that we have created. (Copied from the first argument,)
-        strncpy(filename, argv[1], sizeof(filename));
 
-        #ifdef DEBUG_FILE_INPUT
-            printf("[DEBUG: initialize_file()] %s%s\n",
-                "A filename has been inputted on the command line:",
-                filename);
-        #endif
-    }
 
 
     while (strlen(filename) == 0 || filename[0] == 10)                          // If the user didn't enter a filename, or simply pressed the enter key...

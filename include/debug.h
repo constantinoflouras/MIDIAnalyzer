@@ -9,7 +9,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#define ENABLE_DEBUG
 #ifdef ENABLE_DEBUG
 	/** @brief Macro for error output.*/
 	#define ERROR(fmt, args...)												\

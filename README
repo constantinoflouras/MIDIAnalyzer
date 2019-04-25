@@ -1,5 +1,16 @@
 README for MIDIANALYZER
 
+Usage of the program:
+
+./midianalysis [--mididev=/dev/your_midi_device] file.midi
+
+The desired MIDI file MUST be the last argument.
+
+
+
+
+
+
 How-To: Start the (virtual) MIDI device
 ---------------------------------------
 
