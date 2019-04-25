@@ -1,0 +1,17 @@
+README for MIDIANALYZER
+
+How-To: Start the (virtual) MIDI device
+---------------------------------------
+
+1) Open a Terminal window and type the following command:
+"timidity -iA"
+
+This starts a timidity server, which is the "output" of our virtual MIDI device.
+
+2) Load the snd-virmidi kernel module, by opening another Terminal window:
+"modprobe snd-virmidi"
+
+3) Type "aconnect -o" to list all available port numbers.
+
+4) Link the virtual MIDI device to the timidity output.
+"aconnect 28:0 128:0"
