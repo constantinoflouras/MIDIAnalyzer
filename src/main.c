@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <time.h>
+#include "main.h"
 #include "midi_reader.h"
 #include "midi_parse.h"
 #include "debug.h"
@@ -36,19 +37,33 @@ int MIDIBlockStatus_updateDeltaTime(struct MIDIBlockStatus * midi_block_status);
 
 /*!
     Handles all arguments passed into the program. Success means that the
-    program would be ready to execute.
+    program received arguments in the proper syntax-- but it does not verify
+    the integrity of the arguments passed.
 
     @param argc int representing number of arguments
     @param argv pointer to the argument array
-    @param file pointer to a file descriptor
-    @param dev  pointer to a device descriptor
-    @return An int representing success (0) or failure (positive)
+    @param params pointer to a struct storing the program arguments
+    @return An int representing success (0) or invalid (positive)
  */
-int process_args(int argc, char * argv[], FILE ** file, int * dev)
+int parse_args(int argc, char * argv[], struct main_params * params)
 {
     /*  Internal counter for us to keep track of
         which argument we're processing.    */
-    int cntr = 0;
+    int cntr = 1;
+
+    /*  Internal flag that simply tells us whether or not
+        we passed in correct argument syntax-- this doesn't
+        necessarily mean that we were able to read a file or
+        whatnot, it just means that the user inputted arguments
+        in the proper syntax.   */
+    /*  Remember: zero is success, 1 is failure     */
+    int ret = 1;
+
+    /*  Default initialization values   */
+    params->midi_file = NULL;
+    params->device_file = -1;
+    memset(params->midi_filename, 0, MAX_FILENAME_LENGTH);
+    memset(params->dev_filename, 0, MAX_FILENAME_LENGTH);
 
     /*  Every single argument that is passed will be
         read and considered-- but if we run out out of
@@ -59,19 +74,29 @@ int process_args(int argc, char * argv[], FILE ** file, int * dev)
         {
             /*  This is the MIDI device that we'd like to output to.   */
             DEBUG("Opening the following device: %s\n", &(argv[cntr][10]));
-            *dev = open(&(argv[cntr][10]), O_WRONLY, 0);
-            DEBUG("[DEBUG: %s] The resulting FD number was: %d\n", *dev);
+            params->device_file = open(&(argv[cntr][10]), O_WRONLY, 0);
+
+            /*  Store the filename of the device    */
+            strncpy( &(params->dev_filename[0]), &(argv[cntr][10]), MAX_FILENAME_LENGTH);
+            DEBUG("The resulting FD number was: %d\n", params->device_file);
         }
         else if (cntr == (argc-1))
         {
             /*  In an ideal situation, this would be the file itself.   */
             DEBUG("Opening the following MIDI file: %s\n", argv[cntr]);
-            *file = fopen(argv[cntr], "rb");
-            DEBUG("Opening the file was %s.\n", (*file == NULL) ? "unsuccessful--an error occurred" : "successful");
+            params->midi_file = fopen(argv[cntr], "rb");
+
+            /*  Store the filename of the MIDI file.    */
+            strncpy( &(params->midi_filename[0]), &(argv[cntr][0]), MAX_FILENAME_LENGTH);
+            DEBUG("Opening the file was %s.\n", (params->midi_file == NULL) ? "unsuccessful--an error occurred" : "successful");
         }
         cntr++;
     }
-    return 0;
+
+    /*  Function return value   */
+    /*  Assumes failure with value of 1 -- success is solely determined
+        on whether or not the MIDI file was able to be read.    */
+    return ret;
 }
 
 
@@ -88,35 +113,23 @@ int process_args(int argc, char * argv[], FILE ** file, int * dev)
 */
 int main(int argc, char * argv[])
 {
-
-    // Let's go ahead and open the MIDI file.int * dev
-    int fd_midi_dev;
-    // Create a MIDI file.
+    /*  File/descriptor for MIDI file and device output */
     FILE * midi_file;
-    process_args(argc, argv, &midi_file, &fd_midi_dev);
+    int device_file;
+    struct main_params params;
 
-
-    if (fd_midi_dev < 0)
+    /*  The following int, represented as a boolean, indicates whether or not
+        we have enough arguments to successfully run the program.   */
+    if (!parse_args(argc, argv, &params))
     {
-        // Couldn't open the MIDI device.
-        printf("[WARNING] Couldn't open the MIDI device!");
-        exit(1);
+        // Processing the arguments failed-- we couldn't initialize the m
+        printf("Invalid arguments. Expected the following:\n"
+                "./%s [--mididev=*dev/midi*] *file*.midi", argv[0]);
     }
 
-    exit(1);
-    /*
-    printf("[NOTICE] MIDI device is open!\n");
-    char bytes[] = {0x90, 0x35, 0x39};
-    write(fd_midi_dev, bytes, 4);
-    */
+    DEBUG("File %s is ready to be analyzed.\n", params.midi_filename);
 
-
-
-
-
-    // Attempt to initialize the MIDI file, whether or not that's from the
-    // command line argument, or a name specified at runtime.
-    printf("[main()] File has been initialized, %p\n", &midi_file);
+    exit(0);
 
     // Create an array of MIDIBlocks, as defined by the MIDI reader.
     struct MIDIBlock * midi_block_array;
@@ -239,7 +252,7 @@ int main(int argc, char * argv[])
                     printf("\n");
 
 
-                    write(fd_midi_dev, &buffer[0], bytes_read);
+                    write(device_file, &buffer[0], bytes_read);
 
                     // Update the next delta time of the MIDI block
                     int deltaBytesRead = MIDIBlockStatus_updateDeltaTime(&mBlockStatus[midi_block_status_cnt]);
