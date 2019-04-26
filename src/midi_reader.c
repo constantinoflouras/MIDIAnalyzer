@@ -90,31 +90,26 @@ int test_file_if_midi(FILE * file)
 }
 
 /*!
-    Given an 8-byte char array representing a MIDI block header, calculate the size
-	of the given block.
+    Given a char array representing a hexadecimal number,
+	convert it to an integer.
 
-    @param header A character array of size 8. Points to the MIDI block header itself.
-        It is always assumed that this array is eight bytes long. Only the last four
-        bytes of the array will be read.
+    @param header A character array, representing a hexadecimal number
     @return An integer representing the number of bytes that the block is, past
         the header.
 */
-int parse_midi_block_header(unsigned char * header)
+int parse_hex_size(unsigned char * header, int size)
 {
-	DEBUG("Analyze the header: %02x%02x %02x%02x %02x%02x %02x%02x\n",
-			header[0], header[1], header[2], header[3],
-			header[4], header[5], header[6], header[7]);
     /*  Counter for the block size  */
     int block_size = 0;
 
     /*  Iterator for each nibble within the size.   */
-    for (int nibble_pos = 0; nibble_pos < 8; nibble_pos++)
+    for (int nibble_pos = 0; nibble_pos < (size*2); nibble_pos++)
     {
-        /*	00 00 00 00 FF FF FF
+        /*	00 00 00 00 FF FF FF FF
         	Remember... each  ^ is a nibble, or half of a byte.	*/
         unsigned char nibble = (nibble_pos % 2 == 0) ?
-            (header[4 + (nibble_pos/2)] >> 4) :		/*	Upper nibble	*/
-            (header[4 + (nibble_pos/2)] & 0x0F);	/*	Lower nibble	*/
+            (header[(nibble_pos/2)] >> 4) :		/*	Upper nibble	*/
+            (header[(nibble_pos/2)] & 0x0F);	/*	Lower nibble	*/
 
 		/*	Since each position in hex represents the power of 16... convert it to decimal,
 			based on it's representation and position within the number string.	*/
@@ -212,7 +207,7 @@ int grab_midi_blocks(FILE * file, struct MIDIBlock * midiBlocks[], int * size)
 
         /*  Attempt to set the block size.
             If this fails, there's a good chance this is an invalid block.  */
-        currentNode->midiBlock.size = parse_midi_block_header(buffer);
+        currentNode->midiBlock.size = parse_hex_size(&buffer[4], 4);
 
         // Set the char[] header
         strncpy( (char *) (currentNode->midiBlock).header, (char *) buffer, 4);
