@@ -1,4 +1,8 @@
-// midi_parse.c
+/*! @file
+	Responsible for all implementations regarding parsing a MIDI file and its
+	components. This includes building and allocating the individual blocks
+	themselves, the size of the individual blocks, etc.
+*/
 #include "midi_parse.h"
 #include <stdio.h>
 #include <string.h>

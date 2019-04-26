@@ -1,16 +1,17 @@
-\hypertarget{debug_8h}{}\section{include/debug.h File Reference}
-\label{debug_8h}\index{include/debug.\+h@{include/debug.\+h}}
-{\ttfamily \#include $<$stdio.\+h$>$}\newline
-{\ttfamily \#include $<$stdlib.\+h$>$}\newline
-{\ttfamily \#include $<$string.\+h$>$}\newline
-Include dependency graph for debug.\+h\+:\nopagebreak
+\hypertarget{debug_8h}{\section{include/debug.h File Reference}
+\label{debug_8h}\index{include/debug.\-h@{include/debug.\-h}}
+}
+{\ttfamily \#include $<$stdio.\-h$>$}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+Include dependency graph for debug.\-h\-:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
 \includegraphics[width=260pt]{debug_8h__incl}
 \end{center}
 \end{figure}
-This graph shows which files directly or indirectly include this file\+:\nopagebreak
+This graph shows which files directly or indirectly include this file\-:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -20,31 +21,33 @@ This graph shows which files directly or indirectly include this file\+:\nopageb
 \subsection*{Macros}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{debug_8h_a432138093c53d7580af9ec5c5dca387f}\label{debug_8h_a432138093c53d7580af9ec5c5dca387f}} 
-\#define {\bfseries E\+N\+A\+B\+L\+E\+\_\+\+D\+E\+B\+UG}
+\hypertarget{debug_8h_a432138093c53d7580af9ec5c5dca387f}{\#define {\bfseries E\-N\-A\-B\-L\-E\-\_\-\-D\-E\-B\-U\-G}}\label{debug_8h_a432138093c53d7580af9ec5c5dca387f}
+
 \item 
-\#define \hyperlink{debug_8h_aa9b914884d7e4c95be9e9cb2b99d385b}{E\+R\+R\+OR}(fmt,  args...)
+\#define \hyperlink{debug_8h_aa9b914884d7e4c95be9e9cb2b99d385b}{E\-R\-R\-O\-R}(fmt, args...)
 \begin{DoxyCompactList}\small\item\em Macro for error output. \end{DoxyCompactList}\item 
-\#define \hyperlink{debug_8h_a79f9dfbb47e75d7be9eb502bcd1ed76d}{W\+A\+RN}(fmt,  args...)
+\#define \hyperlink{debug_8h_a79f9dfbb47e75d7be9eb502bcd1ed76d}{W\-A\-R\-N}(fmt, args...)
 \begin{DoxyCompactList}\small\item\em Macro for warning output. \end{DoxyCompactList}\item 
-\#define \hyperlink{debug_8h_a8ecf9907df448d577805fca96cfcadc3}{D\+E\+B\+UG}(fmt,  args...)
+\#define \hyperlink{debug_8h_a8ecf9907df448d577805fca96cfcadc3}{D\-E\-B\-U\-G}(fmt, args...)
 \begin{DoxyCompactList}\small\item\em Macro for debug output. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{debug_8h_a577147cebd1ccef410f36fc1fb01168e}\label{debug_8h_a577147cebd1ccef410f36fc1fb01168e}} 
-int {\bfseries pet\+\_\+log\+\_\+file\+\_\+init} (char $\ast$filename)
+\hypertarget{debug_8h_a577147cebd1ccef410f36fc1fb01168e}{int {\bfseries pet\-\_\-log\-\_\-file\-\_\-init} (char $\ast$filename)}\label{debug_8h_a577147cebd1ccef410f36fc1fb01168e}
+
 \end{DoxyCompactItemize}
 
 
 \subsection{Macro Definition Documentation}
-\mbox{\Hypertarget{debug_8h_a8ecf9907df448d577805fca96cfcadc3}\label{debug_8h_a8ecf9907df448d577805fca96cfcadc3}} 
-\index{debug.\+h@{debug.\+h}!D\+E\+B\+UG@{D\+E\+B\+UG}}
-\index{D\+E\+B\+UG@{D\+E\+B\+UG}!debug.\+h@{debug.\+h}}
-\subsubsection{\texorpdfstring{D\+E\+B\+UG}{DEBUG}}
-{\footnotesize\ttfamily \#define D\+E\+B\+UG(\begin{DoxyParamCaption}\item[{}]{fmt,  }\item[{}]{args... }\end{DoxyParamCaption})}
-
-{\bfseries Value\+:}
+\hypertarget{debug_8h_a8ecf9907df448d577805fca96cfcadc3}{\index{debug.\-h@{debug.\-h}!D\-E\-B\-U\-G@{D\-E\-B\-U\-G}}
+\index{D\-E\-B\-U\-G@{D\-E\-B\-U\-G}!debug.h@{debug.\-h}}
+\subsubsection[{D\-E\-B\-U\-G}]{\setlength{\rightskip}{0pt plus 5cm}\#define D\-E\-B\-U\-G(
+\begin{DoxyParamCaption}
+\item[{}]{fmt, }
+\item[{}]{args...}
+\end{DoxyParamCaption}
+)}}\label{debug_8h_a8ecf9907df448d577805fca96cfcadc3}
+{\bfseries Value\-:}
 \begin{DoxyCode}
 \textcolor{keywordflow}{do} \{                                                                \(\backslash\)
             fprintf(stdout, \textcolor{stringliteral}{"[DEBUG: %s] "} fmt,  \_\_func\_\_, ##args);         \(\backslash\)
@@ -54,13 +57,15 @@ int {\bfseries pet\+\_\+log\+\_\+file\+\_\+init} (char $\ast$filename)
 
 Macro for debug output. 
 
-\mbox{\Hypertarget{debug_8h_aa9b914884d7e4c95be9e9cb2b99d385b}\label{debug_8h_aa9b914884d7e4c95be9e9cb2b99d385b}} 
-\index{debug.\+h@{debug.\+h}!E\+R\+R\+OR@{E\+R\+R\+OR}}
-\index{E\+R\+R\+OR@{E\+R\+R\+OR}!debug.\+h@{debug.\+h}}
-\subsubsection{\texorpdfstring{E\+R\+R\+OR}{ERROR}}
-{\footnotesize\ttfamily \#define E\+R\+R\+OR(\begin{DoxyParamCaption}\item[{}]{fmt,  }\item[{}]{args... }\end{DoxyParamCaption})}
-
-{\bfseries Value\+:}
+\hypertarget{debug_8h_aa9b914884d7e4c95be9e9cb2b99d385b}{\index{debug.\-h@{debug.\-h}!E\-R\-R\-O\-R@{E\-R\-R\-O\-R}}
+\index{E\-R\-R\-O\-R@{E\-R\-R\-O\-R}!debug.h@{debug.\-h}}
+\subsubsection[{E\-R\-R\-O\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define E\-R\-R\-O\-R(
+\begin{DoxyParamCaption}
+\item[{}]{fmt, }
+\item[{}]{args...}
+\end{DoxyParamCaption}
+)}}\label{debug_8h_aa9b914884d7e4c95be9e9cb2b99d385b}
+{\bfseries Value\-:}
 \begin{DoxyCode}
 \textcolor{keywordflow}{do} \{                                                                \(\backslash\)
             fprintf(stderr, \textcolor{stringliteral}{"[ERROR: %s] "} fmt, \_\_func\_\_, ##args);          \(\backslash\)
@@ -70,13 +75,15 @@ Macro for debug output.
 
 Macro for error output. 
 
-\mbox{\Hypertarget{debug_8h_a79f9dfbb47e75d7be9eb502bcd1ed76d}\label{debug_8h_a79f9dfbb47e75d7be9eb502bcd1ed76d}} 
-\index{debug.\+h@{debug.\+h}!W\+A\+RN@{W\+A\+RN}}
-\index{W\+A\+RN@{W\+A\+RN}!debug.\+h@{debug.\+h}}
-\subsubsection{\texorpdfstring{W\+A\+RN}{WARN}}
-{\footnotesize\ttfamily \#define W\+A\+RN(\begin{DoxyParamCaption}\item[{}]{fmt,  }\item[{}]{args... }\end{DoxyParamCaption})}
-
-{\bfseries Value\+:}
+\hypertarget{debug_8h_a79f9dfbb47e75d7be9eb502bcd1ed76d}{\index{debug.\-h@{debug.\-h}!W\-A\-R\-N@{W\-A\-R\-N}}
+\index{W\-A\-R\-N@{W\-A\-R\-N}!debug.h@{debug.\-h}}
+\subsubsection[{W\-A\-R\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define W\-A\-R\-N(
+\begin{DoxyParamCaption}
+\item[{}]{fmt, }
+\item[{}]{args...}
+\end{DoxyParamCaption}
+)}}\label{debug_8h_a79f9dfbb47e75d7be9eb502bcd1ed76d}
+{\bfseries Value\-:}
 \begin{DoxyCode}
 \textcolor{keywordflow}{do} \{                                                                \(\backslash\)
             fprintf(stdout, \textcolor{stringliteral}{"[WARNING: %s] "} fmt, \_\_func\_\_, ##args);        \(\backslash\)

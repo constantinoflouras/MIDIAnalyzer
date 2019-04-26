@@ -1,17 +1,18 @@
-\hypertarget{main_8c}{}\section{src/main.c File Reference}
-\label{main_8c}\index{src/main.\+c@{src/main.\+c}}
-{\ttfamily \#include $<$stdio.\+h$>$}\newline
-{\ttfamily \#include $<$stdlib.\+h$>$}\newline
-{\ttfamily \#include $<$string.\+h$>$}\newline
-{\ttfamily \#include $<$errno.\+h$>$}\newline
-{\ttfamily \#include $<$fcntl.\+h$>$}\newline
-{\ttfamily \#include $<$unistd.\+h$>$}\newline
-{\ttfamily \#include $<$time.\+h$>$}\newline
-{\ttfamily \#include \char`\"{}main.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}midi\+\_\+reader.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}midi\+\_\+parse.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}debug.\+h\char`\"{}}\newline
-Include dependency graph for main.\+c\+:\nopagebreak
+\hypertarget{main_8c}{\section{src/main.c File Reference}
+\label{main_8c}\index{src/main.\-c@{src/main.\-c}}
+}
+{\ttfamily \#include $<$stdio.\-h$>$}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+{\ttfamily \#include $<$errno.\-h$>$}\\*
+{\ttfamily \#include $<$fcntl.\-h$>$}\\*
+{\ttfamily \#include $<$unistd.\-h$>$}\\*
+{\ttfamily \#include $<$time.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}main.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}midi\-\_\-reader.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}midi\-\_\-parse.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}debug.\-h\char`\"{}}\\*
+Include dependency graph for main.\-c\-:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -21,42 +22,35 @@ Include dependency graph for main.\+c\+:\nopagebreak
 \subsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
-struct \hyperlink{structMIDIBlockStatus}{M\+I\+D\+I\+Block\+Status}
-\end{DoxyCompactItemize}
-\subsection*{Macros}
-\begin{DoxyCompactItemize}
-\item 
-\mbox{\Hypertarget{main_8c_acc4dda1aaabc9862fe79fd94e0b722bf}\label{main_8c_acc4dda1aaabc9862fe79fd94e0b722bf}} 
-\#define {\bfseries E\+V\+E\+N\+T\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+I\+ZE}~32
-\item 
-\mbox{\Hypertarget{main_8c_a24c1405225e4ce27b24bcf4f32f4ff0e}\label{main_8c_a24c1405225e4ce27b24bcf4f32f4ff0e}} 
-\#define {\bfseries F\+I\+L\+E\+N\+A\+M\+E\+\_\+\+M\+A\+X\+\_\+\+S\+I\+ZE}~256
+struct \hyperlink{structMIDIBlockStatus}{M\-I\-D\-I\-Block\-Status}
 \end{DoxyCompactItemize}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{main_8c_a93c50b79b00728e89c1a488fd2efabdd}\label{main_8c_a93c50b79b00728e89c1a488fd2efabdd}} 
-int {\bfseries initialize\+\_\+file} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]}, F\+I\+LE $\ast$$\ast$midi\+\_\+file)
+\hypertarget{main_8c_adae8c2dcd3d6726f629d7015c30f81ae}{int {\bfseries M\-I\-D\-I\-Block\-Status\-\_\-is\-Playing} (struct \hyperlink{structMIDIBlockStatus}{M\-I\-D\-I\-Block\-Status} $\ast$midi\-\_\-block\-\_\-status, int count)}\label{main_8c_adae8c2dcd3d6726f629d7015c30f81ae}
+
 \item 
-\mbox{\Hypertarget{main_8c_adae8c2dcd3d6726f629d7015c30f81ae}\label{main_8c_adae8c2dcd3d6726f629d7015c30f81ae}} 
-int {\bfseries M\+I\+D\+I\+Block\+Status\+\_\+is\+Playing} (struct \hyperlink{structMIDIBlockStatus}{M\+I\+D\+I\+Block\+Status} $\ast$midi\+\_\+block\+\_\+status, int count)
+\hypertarget{main_8c_a61bd11e29e619346a057fdb02960b7ef}{int {\bfseries M\-I\-D\-I\-Block\-Status\-\_\-update\-Delta\-Time} (struct \hyperlink{structMIDIBlockStatus}{M\-I\-D\-I\-Block\-Status} $\ast$midi\-\_\-block\-\_\-status)}\label{main_8c_a61bd11e29e619346a057fdb02960b7ef}
+
 \item 
-\mbox{\Hypertarget{main_8c_a61bd11e29e619346a057fdb02960b7ef}\label{main_8c_a61bd11e29e619346a057fdb02960b7ef}} 
-int {\bfseries M\+I\+D\+I\+Block\+Status\+\_\+update\+Delta\+Time} (struct \hyperlink{structMIDIBlockStatus}{M\+I\+D\+I\+Block\+Status} $\ast$midi\+\_\+block\+\_\+status)
-\item 
-int \hyperlink{main_8c_a2e7bd2ed6251195b22456cd6f6566403}{parse\+\_\+args} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]}, struct \hyperlink{structmain__params}{main\+\_\+params} $\ast$params)
+int \hyperlink{main_8c_a2e7bd2ed6251195b22456cd6f6566403}{parse\-\_\-args} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]}, struct \hyperlink{structmain__params}{main\-\_\-params} $\ast$params)
 \item 
 int \hyperlink{main_8c_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \begin{DoxyCompactList}\small\item\em Main entry point for the application. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
-\subsection{Function Documentation}
-\mbox{\Hypertarget{main_8c_a0ddf1224851353fc92bfbff6f499fa97}\label{main_8c_a0ddf1224851353fc92bfbff6f499fa97}} 
-\index{main.\+c@{main.\+c}!main@{main}}
-\index{main@{main}!main.\+c@{main.\+c}}
-\subsubsection{\texorpdfstring{main()}{main()}}
-{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+\subsection{Detailed Description}
+Main program executable entry point. 
 
+\subsection{Function Documentation}
+\hypertarget{main_8c_a0ddf1224851353fc92bfbff6f499fa97}{\index{main.\-c@{main.\-c}!main@{main}}
+\index{main@{main}!main.c@{main.\-c}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a0ddf1224851353fc92bfbff6f499fa97}
 
 
 Main entry point for the application. 
@@ -68,12 +62,15 @@ Main entry point for the application.
 {\em argv} & pointer to the argument array \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{main_8c_a2e7bd2ed6251195b22456cd6f6566403}\label{main_8c_a2e7bd2ed6251195b22456cd6f6566403}} 
-\index{main.\+c@{main.\+c}!parse\+\_\+args@{parse\+\_\+args}}
-\index{parse\+\_\+args@{parse\+\_\+args}!main.\+c@{main.\+c}}
-\subsubsection{\texorpdfstring{parse\+\_\+args()}{parse\_args()}}
-{\footnotesize\ttfamily int parse\+\_\+args (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]},  }\item[{struct \hyperlink{structmain__params}{main\+\_\+params} $\ast$}]{params }\end{DoxyParamCaption})}
-
+\hypertarget{main_8c_a2e7bd2ed6251195b22456cd6f6566403}{\index{main.\-c@{main.\-c}!parse\-\_\-args@{parse\-\_\-args}}
+\index{parse\-\_\-args@{parse\-\_\-args}!main.c@{main.\-c}}
+\subsubsection[{parse\-\_\-args}]{\setlength{\rightskip}{0pt plus 5cm}int parse\-\_\-args (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}, }
+\item[{struct {\bf main\-\_\-params} $\ast$}]{params}
+\end{DoxyParamCaption}
+)}}\label{main_8c_a2e7bd2ed6251195b22456cd6f6566403}
 Handles all arguments passed into the program. Success means that the program received arguments in the proper syntax-- but it does not verify the integrity of the arguments passed.
 
 

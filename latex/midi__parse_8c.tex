@@ -1,0 +1,26 @@
+\hypertarget{midi__parse_8c}{\section{src/midi\-\_\-parse.c File Reference}
+\label{midi__parse_8c}\index{src/midi\-\_\-parse.\-c@{src/midi\-\_\-parse.\-c}}
+}
+{\ttfamily \#include \char`\"{}midi\-\_\-parse.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stdio.\-h$>$}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+Include dependency graph for midi\-\_\-parse.\-c\-:
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{midi__parse_8c_a8491807f9c5bcbb50e811c5ffa8a5904}{int {\bfseries midi\-\_\-parse\-\_\-var\-Size} (unsigned char $\ast$byte\-\_\-seq, int $\ast$size)}\label{midi__parse_8c_a8491807f9c5bcbb50e811c5ffa8a5904}
+
+\item 
+\hypertarget{midi__parse_8c_a2d1bf73eef5ea76d1a5081d84f12c421}{int {\bfseries midi\-\_\-parse\-\_\-get\-Event} (unsigned char $\ast$buffer, int buffer\-\_\-size, unsigned char $\ast$byte\-\_\-seq)}\label{midi__parse_8c_a2d1bf73eef5ea76d1a5081d84f12c421}
+
+\item 
+\hypertarget{midi__parse_8c_ae4b70a61b22bd276134494587b7895df}{int {\bfseries midi\-\_\-parse\-\_\-event\-Type} (unsigned char $\ast$byte\-\_\-seq, unsigned char $\ast$buffer)}\label{midi__parse_8c_ae4b70a61b22bd276134494587b7895df}
+
+\item 
+\hypertarget{midi__parse_8c_afa44a47428f785f847e32802717d6b4b}{unsigned char $\ast$ {\bfseries midi\-\_\-print\-Bytes} (unsigned char $\ast$byte\-\_\-seq, int bytes)}\label{midi__parse_8c_afa44a47428f785f847e32802717d6b4b}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Responsible for all implementations regarding parsing a M\-I\-D\-I file and its components. This includes building and allocating the individual blocks themselves, the size of the individual blocks, etc. 

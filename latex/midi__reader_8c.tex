@@ -1,16 +1,17 @@
-\hypertarget{midi__reader_8c}{}\section{src/midi\+\_\+reader.c File Reference}
-\label{midi__reader_8c}\index{src/midi\+\_\+reader.\+c@{src/midi\+\_\+reader.\+c}}
-{\ttfamily \#include $<$stdio.\+h$>$}\newline
-{\ttfamily \#include $<$stdlib.\+h$>$}\newline
-{\ttfamily \#include $<$string.\+h$>$}\newline
-{\ttfamily \#include $<$errno.\+h$>$}\newline
-{\ttfamily \#include $<$math.\+h$>$}\newline
-{\ttfamily \#include $<$fcntl.\+h$>$}\newline
-{\ttfamily \#include $<$unistd.\+h$>$}\newline
-{\ttfamily \#include \char`\"{}midi\+\_\+parse.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}midi\+\_\+reader.\+h\char`\"{}}\newline
-{\ttfamily \#include \char`\"{}debug.\+h\char`\"{}}\newline
-Include dependency graph for midi\+\_\+reader.\+c\+:\nopagebreak
+\hypertarget{midi__reader_8c}{\section{src/midi\-\_\-reader.c File Reference}
+\label{midi__reader_8c}\index{src/midi\-\_\-reader.\-c@{src/midi\-\_\-reader.\-c}}
+}
+{\ttfamily \#include $<$stdio.\-h$>$}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+{\ttfamily \#include $<$errno.\-h$>$}\\*
+{\ttfamily \#include $<$math.\-h$>$}\\*
+{\ttfamily \#include $<$fcntl.\-h$>$}\\*
+{\ttfamily \#include $<$unistd.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}midi\-\_\-parse.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}midi\-\_\-reader.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}debug.\-h\char`\"{}}\\*
+Include dependency graph for midi\-\_\-reader.\-c\-:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -20,59 +21,81 @@ Include dependency graph for midi\+\_\+reader.\+c\+:\nopagebreak
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{midi__reader_8c_a00fb49e32732854d4d6dac89308a285a}\label{midi__reader_8c_a00fb49e32732854d4d6dac89308a285a}} 
-int {\bfseries request\+\_\+\+M\+I\+D\+I\+\_\+blocks} (F\+I\+LE $\ast$midi\+\_\+file\+\_\+input, struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$midi\+\_\+block\+\_\+array, int $\ast$M\+I\+D\+I\+Block\+Arr\+Size)
+struct \hyperlink{structMIDIBlockNode}{M\-I\-D\-I\-Block\-Node} $\ast$ \hyperlink{midi__reader_8c_a0a64d5bf58e3c9b233b72a18102256fc}{load\-\_\-\-M\-I\-D\-I\-\_\-file\-\_\-into\-\_\-mem} (F\-I\-L\-E $\ast$midi\-\_\-file)
+\begin{DoxyCompactList}\small\item\em Loads the M\-I\-D\-I file into memory. \end{DoxyCompactList}\item 
+\hypertarget{midi__reader_8c_a00fb49e32732854d4d6dac89308a285a}{int {\bfseries request\-\_\-\-M\-I\-D\-I\-\_\-blocks} (F\-I\-L\-E $\ast$midi\-\_\-file\-\_\-input, struct \hyperlink{structMIDIBlock}{M\-I\-D\-I\-Block} $\ast$midi\-\_\-block\-\_\-array, int $\ast$M\-I\-D\-I\-Block\-Arr\-Size)}\label{midi__reader_8c_a00fb49e32732854d4d6dac89308a285a}
+
 \item 
-\mbox{\Hypertarget{midi__reader_8c_a35a3560e5e509c9f658feb81103c94f8}\label{midi__reader_8c_a35a3560e5e509c9f658feb81103c94f8}} 
-void {\bfseries process\+\_\+bytes} (unsigned char $\ast$byte\+\_\+seq, int num\+\_\+bytes)
+\hypertarget{midi__reader_8c_a35a3560e5e509c9f658feb81103c94f8}{void {\bfseries process\-\_\-bytes} (unsigned char $\ast$byte\-\_\-seq, int num\-\_\-bytes)}\label{midi__reader_8c_a35a3560e5e509c9f658feb81103c94f8}
+
 \item 
-\mbox{\Hypertarget{midi__reader_8c_a87d588803681a4b26ffba7d3d3804786}\label{midi__reader_8c_a87d588803681a4b26ffba7d3d3804786}} 
-int {\bfseries test\+\_\+file\+\_\+if\+\_\+midi} (F\+I\+LE $\ast$file)
+\hypertarget{midi__reader_8c_a87d588803681a4b26ffba7d3d3804786}{int {\bfseries test\-\_\-file\-\_\-if\-\_\-midi} (F\-I\-L\-E $\ast$file)}\label{midi__reader_8c_a87d588803681a4b26ffba7d3d3804786}
+
 \item 
-int \hyperlink{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}{parse\+\_\+hex\+\_\+size} (unsigned char $\ast$header, int size)
+int \hyperlink{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}{parse\-\_\-hex\-\_\-size} (unsigned char $\ast$header, int size)
 \item 
-int \hyperlink{midi__reader_8c_a8636cb5487137395e9469468d70d0062}{grab\+\_\+midi\+\_\+blocks} (F\+I\+LE $\ast$file, struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$midi\+Blocks\mbox{[}$\,$\mbox{]}, int $\ast$size)
-\begin{DoxyCompactList}\small\item\em Given a M\+I\+DI file, loads all M\+I\+DI blocks into memory. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}\label{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}} 
-int {\bfseries free\+Blocks} (struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$$\ast$midi\+Blocks, int number\+\_\+of\+\_\+blocks)
-\end{DoxyCompactItemize}
+int \hyperlink{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}{free\-Blocks} (struct \hyperlink{structMIDIBlock}{M\-I\-D\-I\-Block} $\ast$$\ast$midi\-Blocks, int number\-\_\-of\-\_\-blocks)
+\begin{DoxyCompactList}\small\item\em Given a M\-I\-D\-I file, loads all M\-I\-D\-I blocks into memory. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{midi__reader_8c_a3cde3b56025e69872fb87ed8106750d0}\label{midi__reader_8c_a3cde3b56025e69872fb87ed8106750d0}} 
-F\+I\+LE $\ast$ {\bfseries midi\+\_\+file\+\_\+input}
+\hypertarget{midi__reader_8c_a3cde3b56025e69872fb87ed8106750d0}{F\-I\-L\-E $\ast$ {\bfseries midi\-\_\-file\-\_\-input}}\label{midi__reader_8c_a3cde3b56025e69872fb87ed8106750d0}
+
 \end{DoxyCompactItemize}
 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{midi__reader_8c_a8636cb5487137395e9469468d70d0062}\label{midi__reader_8c_a8636cb5487137395e9469468d70d0062}} 
-\index{midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}!grab\+\_\+midi\+\_\+blocks@{grab\+\_\+midi\+\_\+blocks}}
-\index{grab\+\_\+midi\+\_\+blocks@{grab\+\_\+midi\+\_\+blocks}!midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}}
-\subsubsection{\texorpdfstring{grab\+\_\+midi\+\_\+blocks()}{grab\_midi\_blocks()}}
-{\footnotesize\ttfamily int grab\+\_\+midi\+\_\+blocks (\begin{DoxyParamCaption}\item[{F\+I\+LE $\ast$}]{file,  }\item[{struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$}]{midi\+Blocks\mbox{[}$\,$\mbox{]},  }\item[{int $\ast$}]{size }\end{DoxyParamCaption})}
+\hypertarget{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}{\index{midi\-\_\-reader.\-c@{midi\-\_\-reader.\-c}!free\-Blocks@{free\-Blocks}}
+\index{free\-Blocks@{free\-Blocks}!midi_reader.c@{midi\-\_\-reader.\-c}}
+\subsubsection[{free\-Blocks}]{\setlength{\rightskip}{0pt plus 5cm}int free\-Blocks (
+\begin{DoxyParamCaption}
+\item[{struct {\bf M\-I\-D\-I\-Block} $\ast$$\ast$}]{midi\-Blocks, }
+\item[{int}]{number\-\_\-of\-\_\-blocks}
+\end{DoxyParamCaption}
+)}}\label{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}
 
 
-
-Given a M\+I\+DI file, loads all M\+I\+DI blocks into memory. 
+Given a M\-I\-D\-I file, loads all M\-I\-D\-I blocks into memory. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em file} & A pointer to a M\+I\+DI file. \\
+{\em file} & A pointer to a M\-I\-D\-I file. \\
 \hline
-{\em midi\+Blocks} & A pointer to an array of struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block}. This will contain the output of the function, in the form of an array. \\
+{\em midi\-Blocks} & A pointer to an array of struct \hyperlink{structMIDIBlock}{M\-I\-D\-I\-Block}. This will contain the output of the function, in the form of an array. \\
 \hline
-{\em size} & A pointer to an integer, representing the size of the outputted midi\+Blocks array. \\
+{\em size} & A pointer to an integer, representing the size of the outputted midi\-Blocks array. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 A success (0) or failure (positive) integer. 
 \end{DoxyReturn}
-\mbox{\Hypertarget{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}\label{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}} 
-\index{midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}!parse\+\_\+hex\+\_\+size@{parse\+\_\+hex\+\_\+size}}
-\index{parse\+\_\+hex\+\_\+size@{parse\+\_\+hex\+\_\+size}!midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}}
-\subsubsection{\texorpdfstring{parse\+\_\+hex\+\_\+size()}{parse\_hex\_size()}}
-{\footnotesize\ttfamily int parse\+\_\+hex\+\_\+size (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{header,  }\item[{int}]{size }\end{DoxyParamCaption})}
+\hypertarget{midi__reader_8c_a0a64d5bf58e3c9b233b72a18102256fc}{\index{midi\-\_\-reader.\-c@{midi\-\_\-reader.\-c}!load\-\_\-\-M\-I\-D\-I\-\_\-file\-\_\-into\-\_\-mem@{load\-\_\-\-M\-I\-D\-I\-\_\-file\-\_\-into\-\_\-mem}}
+\index{load\-\_\-\-M\-I\-D\-I\-\_\-file\-\_\-into\-\_\-mem@{load\-\_\-\-M\-I\-D\-I\-\_\-file\-\_\-into\-\_\-mem}!midi_reader.c@{midi\-\_\-reader.\-c}}
+\subsubsection[{load\-\_\-\-M\-I\-D\-I\-\_\-file\-\_\-into\-\_\-mem}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf M\-I\-D\-I\-Block\-Node}$\ast$ load\-\_\-\-M\-I\-D\-I\-\_\-file\-\_\-into\-\_\-mem (
+\begin{DoxyParamCaption}
+\item[{F\-I\-L\-E $\ast$}]{midi\-\_\-file}
+\end{DoxyParamCaption}
+)}}\label{midi__reader_8c_a0a64d5bf58e3c9b233b72a18102256fc}
 
+
+Loads the M\-I\-D\-I file into memory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em midi\-\_\-file} & F\-I\-L\-E pointer to a M\-I\-D\-I file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A struct that contains an array of M\-I\-D\-I\-Blocks. 
+\end{DoxyReturn}
+\hypertarget{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}{\index{midi\-\_\-reader.\-c@{midi\-\_\-reader.\-c}!parse\-\_\-hex\-\_\-size@{parse\-\_\-hex\-\_\-size}}
+\index{parse\-\_\-hex\-\_\-size@{parse\-\_\-hex\-\_\-size}!midi_reader.c@{midi\-\_\-reader.\-c}}
+\subsubsection[{parse\-\_\-hex\-\_\-size}]{\setlength{\rightskip}{0pt plus 5cm}int parse\-\_\-hex\-\_\-size (
+\begin{DoxyParamCaption}
+\item[{unsigned char $\ast$}]{header, }
+\item[{int}]{size}
+\end{DoxyParamCaption}
+)}}\label{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}
 Given a char array representing a hexadecimal number, convert it to an integer.
 
 
