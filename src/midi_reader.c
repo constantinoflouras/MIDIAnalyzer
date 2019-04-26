@@ -1,10 +1,4 @@
-/*
-    Name: Constantino Flouras
-    Date: July 26th, 2018
-*/
-// Constantino Flouras
-// July 26th, 2018
-// MIDI Reader
+/*! @file */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +11,7 @@
 
 #include "midi_parse.h"
 #include "midi_reader.h"
+#include "debug.h"
 
 // Global variables
 FILE * midi_file_input;                                                         // Declare the midi_file_input variable
@@ -77,80 +72,7 @@ void process_bytes(unsigned char * byte_seq, int num_bytes)
         }
         write(fd, buffer, 3);
         last_delta_time = delta_time;
-
-
-        /*
-        // <delta-time><event>
-        // Find the delta-time for this event.
-        unsigned int delta_length = 0;
-        while ( (byte_seq[byte_cnt] & (1<<7)) != 0)
-        {
-            printf("analyze: %d\n", byte_seq[byte_cnt]);
-            printf("binary: %d\n", byte_seq[byte_cnt] & (1<<7));
-            delta_length = delta_length + ((byte_seq[byte_cnt]) << 8);
-            printf("delta_length(byte %d): %d", byte_cnt, delta_length);
-            byte_cnt++;
-        }
-
-        printf("delta_length: %d", delta_length);
-        printf("sizeof(int")
-        break;
-        */
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        switch(byte_seq[byte_cnt])
-        {
-            case 0x00:
-                // No operation, skip byte
-                break;
-            case 0xFF:
-                // Meta-events
-                byte_cnt++;
-                switch(byte_seq[byte_cnt]<<8 | byte_seq[byte_cnt+1])
-                {
-                    case 0x5405:
-                        //valid?
-                        printf("Found the SMPTE case!");
-                        byte_cnt = byte_cnt + 5;
-                        break;
-                    default:
-                        break;
-                };
-                break;  // end meta-event;
-            case 0xFF:
-            default:
-                break;
-                //Unimplemented sequence
-        };
-        */
     }
-
-
-    /*
-    int i = 0;
-    for (; i < number_of_bytes; i++)
-    {
-        printf("%02x ", (unsigned char) byteString[i]);
-    }
-
-    i = 0;
-    for (; i < number_of_bytes; i++)
-    {
-        if (byteString[i] == 0xFF)
-            printf("%d-%02x\n", i, (unsigned char) byteString[i]);
-    }
-    */
 }
 
 int test_file_if_midi(FILE * file)
@@ -167,21 +89,85 @@ int test_file_if_midi(FILE * file)
     return returnStatus;
 }
 
-int grab_midi_blocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
+/*!
+    Given an 8-byte char array representing a MIDI block header, calculate the size
+	of the given block.
+
+    @param header A character array of size 8. Points to the MIDI block header itself.
+        It is always assumed that this array is eight bytes long. Only the last four
+        bytes of the array will be read.
+    @return An integer representing the number of bytes that the block is, past
+        the header.
+*/
+int parse_midi_block_header(unsigned char * header)
 {
-    // For my programs, it is standard practice to restore the original file
-    // position, unless it is explicit what the function is doing.
+	DEBUG("Analyze the header: %02x%02x %02x%02x %02x%02x %02x%02x\n",
+			header[0], header[1], header[2], header[3],
+			header[4], header[5], header[6], header[7]);
+    /*  Counter for the block size  */
+    int block_size = 0;
+
+    /*  Iterator for each nibble within the size.   */
+    for (int nibble_pos = 0; nibble_pos < 8; nibble_pos++)
+    {
+        /*	00 00 00 00 FF FF FF
+        	Remember... each  ^ is a nibble, or half of a byte.	*/
+        unsigned char nibble = (nibble_pos % 2 == 0) ?
+            (header[4 + (nibble_pos/2)] >> 4) :		/*	Upper nibble	*/
+            (header[4 + (nibble_pos/2)] & 0x0F);	/*	Lower nibble	*/
+
+		/*	Since each position in hex represents the power of 16... convert it to decimal,
+			based on it's representation and position within the number string.	*/
+		block_size += (nibble << (4 * (7-nibble_pos) ) );
+    }
+
+	/*	Return the final, calculated block size.	*/
+	DEBUG("Calculated size of the header is: %d\n", block_size);
+    return block_size;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*!
+    \brief Given a MIDI file, loads all MIDI blocks into memory.
+
+    @param file A pointer to a MIDI file.
+    @param midiBlocks A pointer to an array of struct MIDIBlock.
+        This will contain the output of the function, in the form of an array.
+    @param size A pointer to an integer, representing the size of the outputted
+        midiBlocks array.
+    @return A success (0) or failure (positive) integer.
+*/
+int grab_midi_blocks(FILE * file, struct MIDIBlock * midiBlocks[], int * size)
+{
+    /*  Grab the original/current file position.    */
     long file_originalPosition = ftell(file);
 
-    // Before we begin, we need to grab the beginning and end of the file.
-    // This will tell us when we've reached the end of the file later on.
+    /*  Determine the size of the file by seeking to the end, and then go to the beginning. */
     fseek(file, 0, SEEK_END);
     long file_size = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    // So, the idea is that we're going to create an 'internal' linked list of
-    // MIDIBlock structs as we go, and then convert it to an array of MIDIBlocks
-    // after we seek through the entire file.
+    /*  The idea is that we're going to create an 'internal' linked list of
+        MIDIBlock structs as we go. Then, convert it to an array of MIDIBlocks
+        after we seek through the entirety of the file.
+
+        Since these are effectively pointers (notably within the struct MIDIBlock),
+        this is a fairy inexpensive operation to do, and it allows us to do some
+        more manipulation as we go along.   */
+
+    /*  Node struct for our simple linked-list implementation.  */
     struct Node
     {
         struct Node * nextNode;
@@ -191,6 +177,13 @@ int grab_midi_blocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
     // The initial node is where we're going to start reading from when we process the data.
     // The current node is where we're going to write to next. Right now, it's the initial node.
     struct Node * initialNode = malloc(sizeof(struct Node));
+
+    /*  Error-checking to ensure that the allocation was successful.    */
+    if (initialNode == NULL)
+    {
+        ERROR("Couldn't allocate the initial node!\n");
+        return -1;
+    }
     struct Node * currentNode = initialNode;
 
     int block_num = 0;
@@ -201,68 +194,39 @@ int grab_midi_blocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
 
         // Wipe the buffer-- remember that C does not guarantee that
         // this memory space will be all zeroes. This is important!
-        int buffer_pos = 0;
-        for (; buffer_pos < 8; buffer_pos++)
-            buffer[buffer_pos]='\0';
+        memset(buffer, 0, sizeof(buffer));
 
         // Now, we'll go ahead and read in the first eight bytes of this file.
-        int bytes_read = fread(&buffer[0], 1, 8, file);
-        if (bytes_read < 8)
+        int bytes_read;
+        if ((bytes_read = fread(&buffer[0], 1, 8, file)) < 8)
         {
-            // If for whatever reason we didn't read all eight bytes, there's a
-            // chance that we're misaligned with the contents of the file.
-            // Although we're not reading garbage, it's simply not useful to us
-            // because the blocks aren't lined up with where we expect blocks.
-            printf("[WARNING: grabBlocks()] %s%d%s\n",
-                "Attempted to read 8 bytes from file, read ",
-                bytes_read,
-                " bytes. There is a possiblity for data misalignment!");
+            /*  If for whatever reason we didn't read all eight bytes, there's a
+                chance that we're misaligned with the contents of the file.
+                Although we're not reading garbage, it's simply not useful to us
+                because the blocks aren't lined up with where we expect blocks. */
+
+            WARN("Attempted to read 8 bytes from file, read %d bytes."
+                " Data may be misaligned!\n", bytes_read);
             continue;
         }
 
-        // Read in the size of the block
-        int block_size = 0;
-        int offset = 4;
-        int nibble_pos = 0;
-        for (; nibble_pos < 8; nibble_pos++)
-        {
-            unsigned char nibble = buffer[offset+(nibble_pos/2)];
-            nibble = (nibble_pos % 2 == 0) ? nibble >> 4 : nibble & 0x0F;
-            int representation = -1;
-            switch(nibble)
-            {
-                case 'A': representation = 10; break;
-                case 'B': representation = 11; break;
-                case 'C': representation = 12; break;
-                case 'D': representation = 13; break;
-                case 'E': representation = 14; break;
-                case 'F': representation = 15; break;
-                default: representation = nibble; break;
-            }
-
-            // This algorithm converts the hexadecimal numbers to binary!
-            block_size += representation * pow(16, 8 - 1 - nibble_pos);
-        }
-
-        // Instead of fseek(ing), we're actually going to fread directly into
-        // the block of memory that will contain this node.
-
+        /*  Attempt to set the block size.
+            If this fails, there's a good chance this is an invalid block.  */
+        currentNode->midiBlock.size = parse_midi_block_header(buffer);
 
         // Set the char[] header
-        strncpy( (char *) ((*currentNode).midiBlock).header, (char *) buffer, 4);
+        strncpy( (char *) (currentNode->midiBlock).header, (char *) buffer, 4);
 
-        // Set the block size
-        (*currentNode).midiBlock.size = block_size;
 
         // Allocate space for the data to go.
-        (*currentNode).midiBlock.data = malloc(block_size);
+        currentNode->midiBlock.data = malloc(currentNode->midiBlock.size);
 
-        fread(((*currentNode).midiBlock).data, block_size, 1, file);
+        fread((currentNode->midiBlock).data, currentNode->midiBlock.size, 1, file);
         block_num++;
 
         // Prepare for the next node to be written.
-        (*currentNode).nextNode = malloc(sizeof(struct Node));
-        currentNode = (*currentNode).nextNode;
+        currentNode->nextNode = malloc(sizeof(struct Node));
+        currentNode = currentNode->nextNode;
 
         // More of a precaution, but for when we jump into the next node, it's
         // nextNode pointer should be null, since we haven't gotten that far.
@@ -270,7 +234,8 @@ int grab_midi_blocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size)
 
     }
 
-
+	//	TODO: Remove debugging code.
+	return 0;
     // The purpose of this code was to test whether not I was actually storing the contents of the
     // MIDI file within memory. This appears to have been successful, so I think we're in good shape.
 

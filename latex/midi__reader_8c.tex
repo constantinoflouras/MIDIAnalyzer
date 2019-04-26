@@ -1,0 +1,85 @@
+\hypertarget{midi__reader_8c}{}\section{src/midi\+\_\+reader.c File Reference}
+\label{midi__reader_8c}\index{src/midi\+\_\+reader.\+c@{src/midi\+\_\+reader.\+c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$errno.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$fcntl.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}midi\+\_\+parse.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}midi\+\_\+reader.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}debug.\+h\char`\"{}}\newline
+Include dependency graph for midi\+\_\+reader.\+c\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{midi__reader_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{midi__reader_8c_a00fb49e32732854d4d6dac89308a285a}\label{midi__reader_8c_a00fb49e32732854d4d6dac89308a285a}} 
+int {\bfseries request\+\_\+\+M\+I\+D\+I\+\_\+blocks} (F\+I\+LE $\ast$midi\+\_\+file\+\_\+input, struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$midi\+\_\+block\+\_\+array, int $\ast$M\+I\+D\+I\+Block\+Arr\+Size)
+\item 
+\mbox{\Hypertarget{midi__reader_8c_a35a3560e5e509c9f658feb81103c94f8}\label{midi__reader_8c_a35a3560e5e509c9f658feb81103c94f8}} 
+void {\bfseries process\+\_\+bytes} (unsigned char $\ast$byte\+\_\+seq, int num\+\_\+bytes)
+\item 
+\mbox{\Hypertarget{midi__reader_8c_a87d588803681a4b26ffba7d3d3804786}\label{midi__reader_8c_a87d588803681a4b26ffba7d3d3804786}} 
+int {\bfseries test\+\_\+file\+\_\+if\+\_\+midi} (F\+I\+LE $\ast$file)
+\item 
+int \hyperlink{midi__reader_8c_abbdc489540a97e611118e13dae275270}{parse\+\_\+midi\+\_\+block\+\_\+header} (unsigned char $\ast$header)
+\item 
+int \hyperlink{midi__reader_8c_a8636cb5487137395e9469468d70d0062}{grab\+\_\+midi\+\_\+blocks} (F\+I\+LE $\ast$file, struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$midi\+Blocks\mbox{[}$\,$\mbox{]}, int $\ast$size)
+\begin{DoxyCompactList}\small\item\em Given a M\+I\+DI file, loads all M\+I\+DI blocks into memory. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}\label{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}} 
+int {\bfseries free\+Blocks} (struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$$\ast$midi\+Blocks, int number\+\_\+of\+\_\+blocks)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{midi__reader_8c_a3cde3b56025e69872fb87ed8106750d0}\label{midi__reader_8c_a3cde3b56025e69872fb87ed8106750d0}} 
+F\+I\+LE $\ast$ {\bfseries midi\+\_\+file\+\_\+input}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{midi__reader_8c_a8636cb5487137395e9469468d70d0062}\label{midi__reader_8c_a8636cb5487137395e9469468d70d0062}} 
+\index{midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}!grab\+\_\+midi\+\_\+blocks@{grab\+\_\+midi\+\_\+blocks}}
+\index{grab\+\_\+midi\+\_\+blocks@{grab\+\_\+midi\+\_\+blocks}!midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}}
+\subsubsection{\texorpdfstring{grab\+\_\+midi\+\_\+blocks()}{grab\_midi\_blocks()}}
+{\footnotesize\ttfamily int grab\+\_\+midi\+\_\+blocks (\begin{DoxyParamCaption}\item[{F\+I\+LE $\ast$}]{file,  }\item[{struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$}]{midi\+Blocks\mbox{[}$\,$\mbox{]},  }\item[{int $\ast$}]{size }\end{DoxyParamCaption})}
+
+
+
+Given a M\+I\+DI file, loads all M\+I\+DI blocks into memory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & A pointer to a M\+I\+DI file. \\
+\hline
+{\em midi\+Blocks} & A pointer to an array of struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block}. This will contain the output of the function, in the form of an array. \\
+\hline
+{\em size} & A pointer to an integer, representing the size of the outputted midi\+Blocks array. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A success (0) or failure (positive) integer. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{midi__reader_8c_abbdc489540a97e611118e13dae275270}\label{midi__reader_8c_abbdc489540a97e611118e13dae275270}} 
+\index{midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}!parse\+\_\+midi\+\_\+block\+\_\+header@{parse\+\_\+midi\+\_\+block\+\_\+header}}
+\index{parse\+\_\+midi\+\_\+block\+\_\+header@{parse\+\_\+midi\+\_\+block\+\_\+header}!midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}}
+\subsubsection{\texorpdfstring{parse\+\_\+midi\+\_\+block\+\_\+header()}{parse\_midi\_block\_header()}}
+{\footnotesize\ttfamily int parse\+\_\+midi\+\_\+block\+\_\+header (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{header }\end{DoxyParamCaption})}
+
+Given an 8-\/byte char array representing a M\+I\+DI block header, calculate the size of the given block.
+
+
+\begin{DoxyParams}{Parameters}
+{\em header} & A character array of size 8. Points to the M\+I\+DI block header itself. It is always assumed that this array is eight bytes long. Only the last four bytes of the array will be read. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+An integer representing the number of bytes that the block is, past the header. 
+\end{DoxyReturn}

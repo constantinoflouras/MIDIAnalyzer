@@ -77,8 +77,10 @@ $(function() {
 <code>#include &lt;fcntl.h&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
+<code>#include &quot;main.h&quot;</code><br />
 <code>#include &quot;midi_reader.h&quot;</code><br />
 <code>#include &quot;midi_parse.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="debug_8h_source.html">debug.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for main.c:</div>
 <div class="dyncontent">
@@ -110,22 +112,58 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>MIDIBlockStatus_isPlay
 <tr class="memitem:a61bd11e29e619346a057fdb02960b7ef"><td class="memItemLeft" align="right" valign="top"><a id="a61bd11e29e619346a057fdb02960b7ef"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>MIDIBlockStatus_updateDeltaTime</b> (struct <a class="el" href="structMIDIBlockStatus.html">MIDIBlockStatus</a> *midi_block_status)</td></tr>
 <tr class="separator:a61bd11e29e619346a057fdb02960b7ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0af14855bab8a8a8429b0f68fbdfdfe8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a0af14855bab8a8a8429b0f68fbdfdfe8">process_args</a> (int argc, char *argv[], int *file, int *dev)</td></tr>
-<tr class="separator:a0af14855bab8a8a8429b0f68fbdfdfe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top"><a id="a0ddf1224851353fc92bfbff6f499fa97"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
-<tr class="memdesc:a0ddf1224851353fc92bfbff6f499fa97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main entry point for the application. <br /></td></tr>
+<tr class="memitem:a2e7bd2ed6251195b22456cd6f6566403"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a2e7bd2ed6251195b22456cd6f6566403">parse_args</a> (int argc, char *argv[], struct <a class="el" href="structmain__params.html">main_params</a> *params)</td></tr>
+<tr class="separator:a2e7bd2ed6251195b22456cd6f6566403"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
+<tr class="memdesc:a0ddf1224851353fc92bfbff6f499fa97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main entry point for the application.  <a href="#a0ddf1224851353fc92bfbff6f499fa97">More...</a><br /></td></tr>
 <tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a0af14855bab8a8a8429b0f68fbdfdfe8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0af14855bab8a8a8429b0f68fbdfdfe8">&#9670;&nbsp;</a></span>process_args()</h2>
+<a id="a0ddf1224851353fc92bfbff6f499fa97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ddf1224851353fc92bfbff6f499fa97">&#9670;&nbsp;</a></span>main()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int process_args </td>
+          <td class="memname">int main </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>argv</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Main entry point for the application. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argc</td><td>int representing number of arguments </td></tr>
+    <tr><td class="paramname">argv</td><td>pointer to the argument array </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2e7bd2ed6251195b22456cd6f6566403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e7bd2ed6251195b22456cd6f6566403">&#9670;&nbsp;</a></span>parse_args()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int parse_args </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>argc</em>, </td>
@@ -139,14 +177,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>file</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>dev</em>&#160;</td>
+          <td class="paramtype">struct <a class="el" href="structmain__params.html">main_params</a> *&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -155,17 +187,16 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Handles all arguments passed into the program. Success means that the program would be ready to execute.</p>
+<p>Handles all arguments passed into the program. Success means that the program received arguments in the proper syntax&ndash; but it does not verify the integrity of the arguments passed.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">argc</td><td>int representing number of arguments </td></tr>
     <tr><td class="paramname">argv</td><td>pointer to the argument array </td></tr>
-    <tr><td class="paramname">file</td><td>pointer to a file descriptor </td></tr>
-    <tr><td class="paramname">dev</td><td>pointer to a device descriptor </td></tr>
+    <tr><td class="paramname">params</td><td>pointer to a struct storing the program arguments </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>An int representing success (0) or failure (positive) </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>An int representing success (0) or invalid (positive) </dd></dl>
 
 </div>
 </div>

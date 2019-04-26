@@ -110,12 +110,13 @@ int parse_args(int argc, char * argv[], struct main_params * params)
 
 /*!
    \brief Main entry point for the application.
+
+   @param argc int representing number of arguments
+   @param argv pointer to the argument array
 */
 int main(int argc, char * argv[])
 {
     /*  File/descriptor for MIDI file and device output */
-    FILE * midi_file;
-    int device_file;
     struct main_params params;
 
     /*  The following int, represented as a boolean, indicates whether or not
@@ -127,18 +128,24 @@ int main(int argc, char * argv[])
                 "./%s [--mididev=*dev/midi*] *file*.midi", argv[0]);
     }
 
+	/*	Arguments have been saved into the params structure.
+		Verify the integrity of the arguments.	*/
+	if (params.midi_file == NULL)
+	{
+		ERROR("Couldn't open the following MIDI file: %s\n", params.midi_filename);
+		return -1;
+	}
     DEBUG("File %s is ready to be analyzed.\n", params.midi_filename);
 
-    exit(0);
-
-    // Create an array of MIDIBlocks, as defined by the MIDI reader.
+    /* Create an array of MIDIBlocks, as defined by the MIDI reader.    */
     struct MIDIBlock * midi_block_array;
     int midi_block_array_size = 0;
     #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-    if (grab_midi_blocks(midi_file, &midi_block_array, &midi_block_array_size))
+    if (grab_midi_blocks(params.midi_file, &midi_block_array, &midi_block_array_size))
         return -1;
     printf("[main()] Grabbed the MIDI blocks.\n");
-
+	exit(0);
+	
     // Each block has its own instructions that need to run simultaneously.
     // To emulate how this works, we'll simply need to switch between the
     // blocks simultaneously.
@@ -252,7 +259,7 @@ int main(int argc, char * argv[])
                     printf("\n");
 
 
-                    write(device_file, &buffer[0], bytes_read);
+                    write(params.device_file, &buffer[0], bytes_read);
 
                     // Update the next delta time of the MIDI block
                     int deltaBytesRead = MIDIBlockStatus_updateDeltaTime(&mBlockStatus[midi_block_status_cnt]);
@@ -315,7 +322,9 @@ int main(int argc, char * argv[])
     // Free all allocated blocks from memory.
     freeBlocks(&midi_block_array, midi_block_array_size);
     printf("[main()] Free'd the MIDI blocks from memory.\n");
-    fclose(midi_file);
+	//	TODO: Add a cleanup function for the params structure, to close out all
+	//	of the files that I didn't close earlier.
+	fclose(params.midi_file);
     return 0;
 
 }

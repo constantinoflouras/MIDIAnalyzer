@@ -7,8 +7,10 @@
 {\ttfamily \#include $<$fcntl.\+h$>$}\newline
 {\ttfamily \#include $<$unistd.\+h$>$}\newline
 {\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}main.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}midi\+\_\+reader.\+h\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}midi\+\_\+parse.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}debug.\+h\char`\"{}}\newline
 Include dependency graph for main.\+c\+:\nopagebreak
 \begin{figure}[H]
 \begin{center}
@@ -42,21 +44,22 @@ int {\bfseries M\+I\+D\+I\+Block\+Status\+\_\+is\+Playing} (struct \hyperlink{st
 \mbox{\Hypertarget{main_8c_a61bd11e29e619346a057fdb02960b7ef}\label{main_8c_a61bd11e29e619346a057fdb02960b7ef}} 
 int {\bfseries M\+I\+D\+I\+Block\+Status\+\_\+update\+Delta\+Time} (struct \hyperlink{structMIDIBlockStatus}{M\+I\+D\+I\+Block\+Status} $\ast$midi\+\_\+block\+\_\+status)
 \item 
-int \hyperlink{main_8c_a0af14855bab8a8a8429b0f68fbdfdfe8}{process\+\_\+args} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]}, int $\ast$file, int $\ast$dev)
+int \hyperlink{main_8c_a2e7bd2ed6251195b22456cd6f6566403}{parse\+\_\+args} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]}, struct \hyperlink{structmain__params}{main\+\_\+params} $\ast$params)
 \item 
-\mbox{\Hypertarget{main_8c_a0ddf1224851353fc92bfbff6f499fa97}\label{main_8c_a0ddf1224851353fc92bfbff6f499fa97}} 
 int \hyperlink{main_8c_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
 \begin{DoxyCompactList}\small\item\em Main entry point for the application. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Function Documentation}
-\mbox{\Hypertarget{main_8c_a0af14855bab8a8a8429b0f68fbdfdfe8}\label{main_8c_a0af14855bab8a8a8429b0f68fbdfdfe8}} 
-\index{main.\+c@{main.\+c}!process\+\_\+args@{process\+\_\+args}}
-\index{process\+\_\+args@{process\+\_\+args}!main.\+c@{main.\+c}}
-\subsubsection{\texorpdfstring{process\+\_\+args()}{process\_args()}}
-{\footnotesize\ttfamily int process\+\_\+args (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]},  }\item[{int $\ast$}]{file,  }\item[{int $\ast$}]{dev }\end{DoxyParamCaption})}
+\mbox{\Hypertarget{main_8c_a0ddf1224851353fc92bfbff6f499fa97}\label{main_8c_a0ddf1224851353fc92bfbff6f499fa97}} 
+\index{main.\+c@{main.\+c}!main@{main}}
+\index{main@{main}!main.\+c@{main.\+c}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
 
-Handles all arguments passed into the program. Success means that the program would be ready to execute.
+
+
+Main entry point for the application. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -64,11 +67,24 @@ Handles all arguments passed into the program. Success means that the program wo
 \hline
 {\em argv} & pointer to the argument array \\
 \hline
-{\em file} & pointer to a file descriptor \\
+\end{DoxyParams}
+\mbox{\Hypertarget{main_8c_a2e7bd2ed6251195b22456cd6f6566403}\label{main_8c_a2e7bd2ed6251195b22456cd6f6566403}} 
+\index{main.\+c@{main.\+c}!parse\+\_\+args@{parse\+\_\+args}}
+\index{parse\+\_\+args@{parse\+\_\+args}!main.\+c@{main.\+c}}
+\subsubsection{\texorpdfstring{parse\+\_\+args()}{parse\_args()}}
+{\footnotesize\ttfamily int parse\+\_\+args (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]},  }\item[{struct \hyperlink{structmain__params}{main\+\_\+params} $\ast$}]{params }\end{DoxyParamCaption})}
+
+Handles all arguments passed into the program. Success means that the program received arguments in the proper syntax-- but it does not verify the integrity of the arguments passed.
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & int representing number of arguments \\
 \hline
-{\em dev} & pointer to a device descriptor \\
+{\em argv} & pointer to the argument array \\
+\hline
+{\em params} & pointer to a struct storing the program arguments \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-An int representing success (0) or failure (positive) 
+An int representing success (0) or invalid (positive) 
 \end{DoxyReturn}
