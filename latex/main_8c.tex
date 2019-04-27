@@ -23,15 +23,19 @@ Include dependency graph for main.\+c\+:\nopagebreak
 \item 
 struct \hyperlink{structMIDIBlockStatus}{M\+I\+D\+I\+Block\+Status}
 \end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{main_8c_acc4dda1aaabc9862fe79fd94e0b722bf}\label{main_8c_acc4dda1aaabc9862fe79fd94e0b722bf}} 
+\#define {\bfseries E\+V\+E\+N\+T\+\_\+\+B\+U\+F\+F\+E\+R\+\_\+\+S\+I\+ZE}~32
+\end{DoxyCompactItemize}
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{main_8c_adae8c2dcd3d6726f629d7015c30f81ae}\label{main_8c_adae8c2dcd3d6726f629d7015c30f81ae}} 
-int {\bfseries M\+I\+D\+I\+Block\+Status\+\_\+is\+Playing} (struct \hyperlink{structMIDIBlockStatus}{M\+I\+D\+I\+Block\+Status} $\ast$midi\+\_\+block\+\_\+status, int count)
-\item 
-\mbox{\Hypertarget{main_8c_a61bd11e29e619346a057fdb02960b7ef}\label{main_8c_a61bd11e29e619346a057fdb02960b7ef}} 
-int {\bfseries M\+I\+D\+I\+Block\+Status\+\_\+update\+Delta\+Time} (struct \hyperlink{structMIDIBlockStatus}{M\+I\+D\+I\+Block\+Status} $\ast$midi\+\_\+block\+\_\+status)
-\item 
+int \hyperlink{main_8c_a9ed0b8c8642c18d9b75916c66597a263}{is\+Playing} (struct \hyperlink{structMIDIFile}{M\+I\+D\+I\+File} midi\+File)
+\begin{DoxyCompactList}\small\item\em Given a M\+I\+DI file, informs caller whether it is still playing or not. \end{DoxyCompactList}\item 
+int \hyperlink{main_8c_a36f5973f476f7e4e96431af78bd916a7}{update\+Delta\+Time\+Pos} (struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$midi\+Block)
+\begin{DoxyCompactList}\small\item\em Updates the time delta for the next note within a \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block}. \end{DoxyCompactList}\item 
 int \hyperlink{main_8c_a2e7bd2ed6251195b22456cd6f6566403}{parse\+\_\+args} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]}, struct \hyperlink{structmain__params}{main\+\_\+params} $\ast$params)
 \item 
 int \hyperlink{main_8c_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
@@ -42,6 +46,24 @@ int \hyperlink{main_8c_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char 
 Main program executable entry point. 
 
 \subsection{Function Documentation}
+\mbox{\Hypertarget{main_8c_a9ed0b8c8642c18d9b75916c66597a263}\label{main_8c_a9ed0b8c8642c18d9b75916c66597a263}} 
+\index{main.\+c@{main.\+c}!is\+Playing@{is\+Playing}}
+\index{is\+Playing@{is\+Playing}!main.\+c@{main.\+c}}
+\subsubsection{\texorpdfstring{is\+Playing()}{isPlaying()}}
+{\footnotesize\ttfamily int is\+Playing (\begin{DoxyParamCaption}\item[{struct \hyperlink{structMIDIFile}{M\+I\+D\+I\+File}}]{midi\+File }\end{DoxyParamCaption})}
+
+
+
+Given a M\+I\+DI file, informs caller whether it is still playing or not. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em midi\+File} & a struct \hyperlink{structMIDIFile}{M\+I\+D\+I\+File} to check if it is playing \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an integer representing how many blocks are still playing 
+\end{DoxyReturn}
 \mbox{\Hypertarget{main_8c_a0ddf1224851353fc92bfbff6f499fa97}\label{main_8c_a0ddf1224851353fc92bfbff6f499fa97}} 
 \index{main.\+c@{main.\+c}!main@{main}}
 \index{main@{main}!main.\+c@{main.\+c}}
@@ -78,4 +100,22 @@ Handles all arguments passed into the program. Success means that the program re
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 An int representing success (0) or invalid (positive) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{main_8c_a36f5973f476f7e4e96431af78bd916a7}\label{main_8c_a36f5973f476f7e4e96431af78bd916a7}} 
+\index{main.\+c@{main.\+c}!update\+Delta\+Time\+Pos@{update\+Delta\+Time\+Pos}}
+\index{update\+Delta\+Time\+Pos@{update\+Delta\+Time\+Pos}!main.\+c@{main.\+c}}
+\subsubsection{\texorpdfstring{update\+Delta\+Time\+Pos()}{updateDeltaTimePos()}}
+{\footnotesize\ttfamily int update\+Delta\+Time\+Pos (\begin{DoxyParamCaption}\item[{struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$}]{midi\+Block }\end{DoxyParamCaption})}
+
+
+
+Updates the time delta for the next note within a \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em midi\+Block} & pointer to a \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} structure \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+number of bytes that were read 
 \end{DoxyReturn}

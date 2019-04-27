@@ -29,8 +29,8 @@ struct MIDIBlockStatus
 };
 
 /*  Function prototypes     */
-int MIDIBlockStatus_isPlaying(struct MIDIBlockStatus * midi_block_status, int count);
-int MIDIBlockStatus_updateDeltaTime(struct MIDIBlockStatus * midi_block_status);
+int isPlaying(struct MIDIFile midiFile);
+int updateDeltaTimePos(struct MIDIBlock * midiBlock);
 
 /*!
     Handles all arguments passed into the program. Success means that the
@@ -130,33 +130,10 @@ int main(int argc, char * argv[])
 	struct MIDIBlockNode * list = alloc_midi_file(params.midi_file);
 
 	/*	Convert the linked list into an array	*/
-
-
-
-
-	DEBUG("List is located at address %p\n", list);
+	struct MIDIFile midiFile = convert_ll_to_MIDIFile(list);
 
 	/*	At this point, we no longer need to keep the MIDI file open. We can close it now!	*/
 	fclose(params.midi_file);
-
-	struct MIDIBlockNode * iter = list;
-	int n_block_counter = 0;
-	while (iter != NULL)
-	{
-		printf("BLOCK #%d:\n"
-			"\tHeader: %.4s\n"
-			"\tSize: %d\n"
-			"\n",
-			n_block_counter,
-			iter->midiBlock.header,
-			iter->midiBlock.n_data_size);
-		iter = iter->nextNode;
-
-		n_block_counter++;
-	}
-
-
-	struct MIDIFile midiFile = convert_ll_to_MIDIFile(list);
 
 	for (int cntr = 0; cntr < midiFile.num_blocks; cntr++)
 	{
@@ -169,8 +146,94 @@ int main(int argc, char * argv[])
 			midiFile.blockArr[cntr].n_data_size);
 	}
 
+	for (int cntr = 0; cntr < midiFile.num_blocks; cntr++)
+	{
+		if (!strncmp("MTrk", midiFile.blockArr[cntr].header, 4))
+		{
+			DEBUG("Block #%d is a MTrk that can be played.\n", cntr);
+			midiFile.blockArr[cntr].bActive = 1;
+			midiFile.blockArr[cntr].nCurrentPos = 0;
+			updateDeltaTimePos( &(midiFile.blockArr[cntr]));
+		}
+		else
+		{
+			DEBUG("Block #%d of type %.4s cannot be played.\n", cntr, midiFile.blockArr[cntr].header);
+			midiFile.blockArr[cntr].bActive = 0;
+		}
 
-	exit(0);
+	}
+
+	#define EVENT_BUFFER_SIZE 32
+	unsigned char dev_buffer[EVENT_BUFFER_SIZE];
+
+	while(isPlaying(midiFile))
+	{
+		/*	Initialize the timer.	*/
+		clock_t startTime = clock();
+
+		int block_iter = 0;
+		for (block_iter = 0; block_iter < 2/*midiFile.num_blocks*/; block_iter++)
+		{
+			struct MIDIBlock * currentBlock = &(midiFile.blockArr[block_iter]);
+
+			printf("BYTES for BLOCK #%d: ", block_iter);
+			for (int i = 0; i < 15; i++)
+			{
+				printf("%02x ", currentBlock->data[i]);
+			}
+			printf("\n");
+			if (currentBlock->bActive)
+			{
+				DEBUG("This is an active track.\n");
+				/*	This is a playable track	*/
+				/*	Continuously play notes until we hit something that asks
+					for a delay	*/
+				while (currentBlock->bActive && currentBlock->nDeltaTicks <= 0)
+				{
+					DEBUG("Clearing buffer.\n");
+					/* Clear the buffer */
+					memset(dev_buffer, 0, sizeof(dev_buffer));
+
+					/*	Parse the next event, and then determine if there's anything else left to parse.	*/
+					DEBUG("Getting event.\n");
+					int bytes_read = midi_parse_getEvent(dev_buffer, EVENT_BUFFER_SIZE, &(currentBlock->data[currentBlock->nCurrentPos]) );
+					DEBUG("Read %d bytes for event.\n", bytes_read);
+
+					currentBlock->nCurrentPos += bytes_read;
+					currentBlock->bActive = (currentBlock->nCurrentPos < currentBlock->n_data_size);
+					//if (!currentBlock->bActive) break;
+
+
+					/*	Write the next event to the device, if it exists	*/
+					if (params.device_file > 0)
+					{
+						DEBUG("Playing note on device %d, %d bytes...\n", params.device_file, bytes_read);
+
+						write(params.device_file, &(dev_buffer[0]), bytes_read);
+					}
+
+					if (updateDeltaTimePos(currentBlock) == 0)
+					{
+						WARN("Block #%d appears to be corrupt, or something weird happened-- will no longer play from this point on.\n", block_iter);
+						currentBlock->bActive = 0;
+						break;
+					}
+
+
+				}
+				currentBlock->nDeltaTicks--;
+			}
+		}
+
+		while ( (double) (clock() - startTime) < 100000);
+	}
+
+
+
+
+
+
+
 
     return 0;
 
@@ -181,18 +244,20 @@ int main(int argc, char * argv[])
 
 
 
-/*
-    Function: int MIDIBlockStatus_isPlaying(MIDIBlockStatus * midi_block_status, int count)
-    Description:
-        Will return the number of currently playing MIDI tracks.
+
+/*!
+   \brief Given a MIDI file, informs caller whether it is still playing or not.
+
+   @param midiFile a struct MIDIFile to check if it is playing
+   @return an integer representing how many blocks are still playing
 */
-int MIDIBlockStatus_isPlaying(struct MIDIBlockStatus * midi_block_status, int count)
+int isPlaying(struct MIDIFile midiFile)
 {
     int isPlaying = 0;
     int incr = 0;
-    for (; incr < count; incr++)
+    for (; incr < midiFile.num_blocks; incr++)
     {
-        isPlaying += midi_block_status[incr].isPlaying;
+        isPlaying += midiFile.blockArr[incr].bActive;
     }
 
     return isPlaying;
@@ -205,29 +270,39 @@ int MIDIBlockStatus_isPlaying(struct MIDIBlockStatus * midi_block_status, int co
         Returns the number of bytes read for the time-- should throw an error if
         the file limit has been reached.
 */
-int MIDIBlockStatus_updateDeltaTime(struct MIDIBlockStatus * midi_block_status)
+/*! \brief Updates the time delta for the next note within a MIDIBlock
+	@param midiBlock pointer to a MIDIBlock structure
+	@return number of bytes that were read
+*/
+
+int updateDeltaTimePos(struct MIDIBlock * midiBlock)
 {
-    if ((*midi_block_status).currentPos >= (*midi_block_status).dataSize)
+	/*	See if we've reached the end of the file. If so, just return zero	*/
+    if (midiBlock->nCurrentPos >= midiBlock->n_data_size)
     {
-        // Reached the end of the MIDIBlock. Do not attempt to read
-        // in any more bytes-- errors and/or overflow into unwanted memory
-        // will occur!
+		/*	End of the block has been reached-- we can't do any more updates.	*/
         return 0;
     }
 
     // Grab the initial delta-time of the next block.
-    int deltaDelta = 0;
-    int deltaDeltaBytes = midi_parse_varSize(
-        &((*midi_block_status).data[(*midi_block_status).currentPos]), &deltaDelta);
+    int deltaDeltaTime = 0;
 
-    // If bytes were actually read from the file, report back to this block.
+	int deltaDeltaBytes = midi_parse_varSize(
+		&(midiBlock->data[midiBlock->nCurrentPos]),
+		&deltaDeltaTime);
+
+	DEBUG("Read %d bytes to calculate delta ticks time of %d.\n", deltaDeltaBytes, deltaDeltaTime);
+    // If bytes were actually read from the file, report back the time delay
+	//	to the block.
     if (deltaDeltaBytes)
     {
-        (*midi_block_status).deltaTicks += deltaDelta;
+        midiBlock->nDeltaTicks += deltaDeltaTime;
+		midiBlock->nCurrentPos += deltaDeltaBytes;
     }
     else
     {
         // Something weird happened, and we should return 0.
+		DEBUG("WEIRDNESS HAPPENED");
         return 0;
     }
 

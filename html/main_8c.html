@@ -64,6 +64,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">main.c File Reference</div>  </div>
@@ -97,14 +98,20 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMIDIBlockStatus.html">MIDIBlockStatus</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:acc4dda1aaabc9862fe79fd94e0b722bf"><td class="memItemLeft" align="right" valign="top"><a id="acc4dda1aaabc9862fe79fd94e0b722bf"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>EVENT_BUFFER_SIZE</b>&#160;&#160;&#160;32</td></tr>
+<tr class="separator:acc4dda1aaabc9862fe79fd94e0b722bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adae8c2dcd3d6726f629d7015c30f81ae"><td class="memItemLeft" align="right" valign="top"><a id="adae8c2dcd3d6726f629d7015c30f81ae"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>MIDIBlockStatus_isPlaying</b> (struct <a class="el" href="structMIDIBlockStatus.html">MIDIBlockStatus</a> *midi_block_status, int count)</td></tr>
-<tr class="separator:adae8c2dcd3d6726f629d7015c30f81ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61bd11e29e619346a057fdb02960b7ef"><td class="memItemLeft" align="right" valign="top"><a id="a61bd11e29e619346a057fdb02960b7ef"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>MIDIBlockStatus_updateDeltaTime</b> (struct <a class="el" href="structMIDIBlockStatus.html">MIDIBlockStatus</a> *midi_block_status)</td></tr>
-<tr class="separator:a61bd11e29e619346a057fdb02960b7ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ed0b8c8642c18d9b75916c66597a263"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a9ed0b8c8642c18d9b75916c66597a263">isPlaying</a> (struct <a class="el" href="structMIDIFile.html">MIDIFile</a> midiFile)</td></tr>
+<tr class="memdesc:a9ed0b8c8642c18d9b75916c66597a263"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a MIDI file, informs caller whether it is still playing or not.  <a href="#a9ed0b8c8642c18d9b75916c66597a263">More...</a><br /></td></tr>
+<tr class="separator:a9ed0b8c8642c18d9b75916c66597a263"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36f5973f476f7e4e96431af78bd916a7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a36f5973f476f7e4e96431af78bd916a7">updateDeltaTimePos</a> (struct <a class="el" href="structMIDIBlock.html">MIDIBlock</a> *midiBlock)</td></tr>
+<tr class="memdesc:a36f5973f476f7e4e96431af78bd916a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the time delta for the next note within a <a class="el" href="structMIDIBlock.html">MIDIBlock</a>.  <a href="#a36f5973f476f7e4e96431af78bd916a7">More...</a><br /></td></tr>
+<tr class="separator:a36f5973f476f7e4e96431af78bd916a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e7bd2ed6251195b22456cd6f6566403"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a2e7bd2ed6251195b22456cd6f6566403">parse_args</a> (int argc, char *argv[], struct <a class="el" href="structmain__params.html">main_params</a> *params)</td></tr>
 <tr class="separator:a2e7bd2ed6251195b22456cd6f6566403"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
@@ -114,6 +121,33 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>MIDIBlockStatus_update
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Main program executable entry point. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a9ed0b8c8642c18d9b75916c66597a263"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ed0b8c8642c18d9b75916c66597a263">&#9670;&nbsp;</a></span>isPlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int isPlaying </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMIDIFile.html">MIDIFile</a>&#160;</td>
+          <td class="paramname"><em>midiFile</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Given a MIDI file, informs caller whether it is still playing or not. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">midiFile</td><td>a struct <a class="el" href="structMIDIFile.html">MIDIFile</a> to check if it is playing </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>an integer representing how many blocks are still playing </dd></dl>
+
+</div>
+</div>
 <a id="a0ddf1224851353fc92bfbff6f499fa97"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0ddf1224851353fc92bfbff6f499fa97">&#9670;&nbsp;</a></span>main()</h2>
 
@@ -192,6 +226,33 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>MIDIBlockStatus_update
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>An int representing success (0) or invalid (positive) </dd></dl>
+
+</div>
+</div>
+<a id="a36f5973f476f7e4e96431af78bd916a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36f5973f476f7e4e96431af78bd916a7">&#9670;&nbsp;</a></span>updateDeltaTimePos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int updateDeltaTimePos </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMIDIBlock.html">MIDIBlock</a> *&#160;</td>
+          <td class="paramname"><em>midiBlock</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Updates the time delta for the next note within a <a class="el" href="structMIDIBlock.html">MIDIBlock</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">midiBlock</td><td>pointer to a <a class="el" href="structMIDIBlock.html">MIDIBlock</a> structure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>number of bytes that were read </dd></dl>
 
 </div>
 </div>
