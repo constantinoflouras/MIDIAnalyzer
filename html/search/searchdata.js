@@ -1,10 +1,11 @@
 var indexSectionsWithContent =
 {
-  0: "degmpw",
+  0: "abcdefmnpw",
   1: "m",
   2: "dm",
-  3: "gmp",
-  4: "dew"
+  3: "acfmp",
+  4: "bdn",
+  5: "dew"
 };
 
 var indexSectionNames =
@@ -13,7 +14,8 @@ var indexSectionNames =
   1: "classes",
   2: "files",
   3: "functions",
-  4: "defines"
+  4: "variables",
+  5: "defines"
 };
 
 var indexSectionLabels =
@@ -22,6 +24,7 @@ var indexSectionLabels =
   1: "Classes",
   2: "Files",
   3: "Functions",
-  4: "Macros"
+  4: "Variables",
+  5: "Macros"
 };
 

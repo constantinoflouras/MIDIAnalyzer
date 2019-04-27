@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['grab_5fmidi_5fblocks',['grab_midi_blocks',['../midi__reader_8c.html#a8636cb5487137395e9469468d70d0062',1,'midi_reader.c']]]
+  ['alloc_5fmidi_5ffile',['alloc_midi_file',['../midi__reader_8c.html#a7c4b733066db5ab6c76cf86e90636f3f',1,'midi_reader.c']]]
 ];

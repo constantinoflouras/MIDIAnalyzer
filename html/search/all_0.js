@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['debug',['DEBUG',['../debug_8h.html#a8ecf9907df448d577805fca96cfcadc3',1,'debug.h']]],
-  ['debug_2eh',['debug.h',['../debug_8h.html',1,'']]]
+  ['alloc_5fmidi_5ffile',['alloc_midi_file',['../midi__reader_8c.html#a7c4b733066db5ab6c76cf86e90636f3f',1,'midi_reader.c']]]
 ];

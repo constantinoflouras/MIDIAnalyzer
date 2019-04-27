@@ -127,14 +127,51 @@ int main(int argc, char * argv[])
     DEBUG("File %s is ready to be analyzed.\n", params.midi_filename);
 
 	/*	Given a MIDI file, begin to load it into memory.	*/
-	struct MIDIBlockNode * list;
-	list = load_MIDI_file_into_mem(params.midi_file);
+	struct MIDIBlockNode * list = alloc_midi_file(params.midi_file);
+
+	/*	Convert the linked list into an array	*/
+
+
+
+
+	DEBUG("List is located at address %p\n", list);
+
+	/*	At this point, we no longer need to keep the MIDI file open. We can close it now!	*/
+	fclose(params.midi_file);
+
+	struct MIDIBlockNode * iter = list;
+	int n_block_counter = 0;
+	while (iter != NULL)
+	{
+		printf("BLOCK #%d:\n"
+			"\tHeader: %.4s\n"
+			"\tSize: %d\n"
+			"\n",
+			n_block_counter,
+			iter->midiBlock.header,
+			iter->midiBlock.n_data_size);
+		iter = iter->nextNode;
+
+		n_block_counter++;
+	}
+
+
+	struct MIDIFile midiFile = convert_ll_to_MIDIFile(list);
+
+	for (int cntr = 0; cntr < midiFile.num_blocks; cntr++)
+	{
+		printf("ARR_BLOCK #%d:\n"
+			"\tHeader: %.4s\n"
+			"\tSize: %d\n"
+			"\n",
+			cntr,
+			midiFile.blockArr[cntr].header,
+			midiFile.blockArr[cntr].n_data_size);
+	}
+
 
 	exit(0);
 
-	//	TODO: Add a cleanup function for the params structure, to close out all
-	//	of the files that I didn't close earlier.
-	fclose(params.midi_file);
     return 0;
 
 }

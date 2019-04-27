@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['grab_5fmidi_5fblocks',['grab_midi_blocks',['../midi__reader_8c.html#a8636cb5487137395e9469468d70d0062',1,'midi_reader.c']]]
+  ['convert_5fll_5fto_5fmidifile',['convert_ll_to_MIDIFile',['../midi__reader_8c.html#af53b36e1fa28746ca5ec3c1b958a02f5',1,'midi_reader.c']]]
 ];

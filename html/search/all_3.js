@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['main',['main',['../main_8c.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main.c']]],
-  ['main_2ec',['main.c',['../main_8c.html',1,'']]],
-  ['main_5fparams',['main_params',['../structmain__params.html',1,'']]],
-  ['midi_5freader_2ec',['midi_reader.c',['../midi__reader_8c.html',1,'']]],
-  ['midiblock',['MIDIBlock',['../structMIDIBlock.html',1,'']]],
-  ['midiblockstatus',['MIDIBlockStatus',['../structMIDIBlockStatus.html',1,'']]]
+  ['data',['data',['../structMIDIBlock.html#a69c7c7dbb87cd8eb4e2821ccc1aef4fb',1,'MIDIBlock']]],
+  ['debug',['DEBUG',['../debug_8h.html#a8ecf9907df448d577805fca96cfcadc3',1,'debug.h']]],
+  ['debug_2eh',['debug.h',['../debug_8h.html',1,'']]]
 ];

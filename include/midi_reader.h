@@ -31,7 +31,7 @@ struct MIDIBlockNode
 
 struct MIDIFile
 {
-	int blocks;
+	int num_blocks;
 	struct MIDIBlock * blockArr;
 };
 
@@ -48,10 +48,12 @@ struct MIDIFile
 /*
     Function prototypes
 */
+struct MIDIBlockNode * alloc_midi_file(FILE * midi_file);
 int test_file_if_midi(FILE * file);
 int grab_midi_blocks(FILE * file, struct MIDIBlock ** midiBlocks, int * size);
 int freeBlocks(struct MIDIBlock ** midiBlocks, int number_of_blocks);
 void process_bytes(unsigned char * byteString, int number_of_bytes);
 int parse_hex_size(unsigned char * header, int size);
+struct MIDIFile convert_ll_to_MIDIFile(struct MIDIBlockNode * list);
 
 #endif

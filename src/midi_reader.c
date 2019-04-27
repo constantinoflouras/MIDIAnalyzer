@@ -16,12 +16,12 @@
 /*! \brief Loads the MIDI file into memory.
 
 	@param midi_file FILE pointer to a MIDI file.
-	@return A struct that contains an array of MIDIBlocks.
+	@return A pointer to a linked list of struct MIDIBlockNodes (which contain MIDIBlocks).
 */
-struct MIDIBlockNode * load_MIDI_file_into_mem(FILE * midi_file)
+struct MIDIBlockNode * alloc_midi_file(FILE * midi_file)
 {
-	/*	Internal statistics	*/
-	int block_num = 0;
+	int block_num = 0;	/*	Keep track of which block we're on!	*/
+
 	/*  Grab the original/current file position.    */
 	long midi_file_originalPosition = ftell(midi_file);
 
@@ -38,10 +38,9 @@ struct MIDIBlockNode * load_MIDI_file_into_mem(FILE * midi_file)
 		this is a fairy inexpensive operation to do, and it allows us to do some
 		more manipulation as we go along.   */
 
-
-
 	/*	Create an initial starting node for the linked list.	*/
-	struct MIDIBlockNode * p_initialNode = malloc(sizeof(struct MIDIBlockNode));
+	struct MIDIBlockNode * p_initialNode = (struct MIDIBlockNode *) malloc(sizeof(struct MIDIBlockNode));
+
 	if (p_initialNode == NULL)
 	{
 		ERROR("Allocation failed for node representing block %d.\n", block_num);
@@ -97,13 +96,17 @@ struct MIDIBlockNode * load_MIDI_file_into_mem(FILE * midi_file)
 
 		/*	We're finished with this block. Prepare for the next block.	*/
 		block_num++;
-		if ( (p_currentNode->nextNode = malloc(sizeof(struct MIDIBlockNode))) == NULL)
+
+		if (ftell(midi_file) < file_size)
 		{
-			ERROR("Couldn't allocate memory for the next node. Failure status.\n");
-			exit(-1);
+			if ( (p_currentNode->nextNode = malloc(sizeof(struct MIDIBlockNode))) == NULL)
+			{
+				ERROR("Couldn't allocate memory for the next node. Failure status.\n");
+				exit(-1);
+			}
+			memset(p_currentNode->nextNode, 0, sizeof(struct MIDIBlockNode));
+			p_currentNode = p_currentNode->nextNode;	/*	Upon successful allocation, move on.	*/
 		}
-		memset(p_currentNode->nextNode, 0, sizeof(struct MIDIBlockNode));
-		p_currentNode = p_currentNode->nextNode;	/*	Upon successful allocation, move on.	*/
 	}
 
 	/*	The end result of this while-loop is a linked-list containing allocated
@@ -116,7 +119,45 @@ struct MIDIBlockNode * load_MIDI_file_into_mem(FILE * midi_file)
 	return p_initialNode;
 }
 
+/*!	\brief Converts a MIDIBlockNode-based linked list into a fixed-sized array.
 
+	Converts a MIDIBlockNode-based linked list into a fixed-sized array. It will
+	also appropriately deallocate the link list provided.
+
+	@param list pointer to the first node of the linked list containing the MIDIBlock
+*/
+struct MIDIFile convert_ll_to_MIDIFile(struct MIDIBlockNode * list)
+{
+	DEBUG("Initialize the return structure.\n");
+	/*	Return value, we will modify this!	*/
+	struct MIDIFile ret = {0};
+
+	/*	In order to grab the number of elements within the list, we need to run
+		through it at least once, to calculate how big the array needs to be	*/
+	struct MIDIBlockNode * iter = list;
+	ret.num_blocks = 0;
+	DEBUG("Count number of blocks in this list.\n");
+	while(iter != NULL)
+	{
+		ret.num_blocks += 1;
+		iter = iter->nextNode;
+	}
+	DEBUG("There are %d blocks in this list.\n", ret.num_blocks);
+	ret.blockArr = malloc(sizeof(struct MIDIBlock) * ret.num_blocks);
+
+	/*	Now that the array is allocated, we can run through and actually move
+		the elements into place	*/
+	iter = list;
+	for (int cntr = 0; cntr < ret.num_blocks; cntr++)
+	{
+		struct MIDIBlockNode * prev = iter;
+		iter = iter->nextNode;
+
+		memcpy(&(ret.blockArr[cntr]), &(prev->midiBlock), sizeof(struct MIDIBlock));
+		free(prev);
+	}
+	return ret;
+}
 
 
 
