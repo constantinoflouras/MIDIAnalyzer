@@ -7,20 +7,33 @@
 #include <stdio.h>
 #include <string.h>
 
+
+/*! \brief Given a byte sequence, calculate the variable length size represented in this chunk.
+
+	This function has been tested to work correctly with the following values:
+
+	VLR: 0x7F --> DEC: 127
+	VLR: 0x8100 --> DEC: 128
+	VLR: 0xFF7F --> DEC: 16383
+	VLR: 0x8768 --> DEC: 1000
+	VLR: 0xBD8440 -> DEC: 1000000
+
+	@param byte_seq Byte sequence representing a variable length number.
+	@param size Pointer to an int, will be where the variable length size is in binary.
+	@return Integer representing the number of bytes read.
+*/
 int midi_parse_varSize(unsigned char * byte_seq, int * size)
 {
-    // If for whatever reason, the given integer isn't actually 0,
-    // go ahead and reset that now.
+	/*	Reset the size variable to zero.	*/
     (*size) = 0;
 
-    // Additionally, create a byte_cnt variable that will count
-    // the number of reads that were necessary to grab the
-    // entire size. This is the value that will be returned.
+    /*	Byte counter, how big was the variable length size?
+     	Also stores where we're at relatively within this given byte_seq.	*/
     int byte_cnt = 0;
 
-    // To detect the end of the MIDI event size, the most significant
-    // bit (counting from 0, bit 7) must be 0. If it is not 0, then
-    // there are still more bytes to read.
+    /*	To detect the end of the MIDI event size, the most significant
+      	bit (counting from 0, bit 7) must be 0. If it is not 0, then
+      	there are still more bytes to read.	*/
     while ( (((byte_seq[byte_cnt]) & (1<<7)) != 0) && (byte_cnt < 3))
     {
         (*size) = ((*size) << 7) + (byte_seq[byte_cnt] & 0x7F);
@@ -29,32 +42,30 @@ int midi_parse_varSize(unsigned char * byte_seq, int * size)
 
     if ((((byte_seq[byte_cnt]) & (1<<7)) == 0))
     {
-        // Once we see that 0 bit, then we can shift what was previously
-        // there and add the remainder.
+    	/*	Once we see that 0 bit, then we can shift what was previously
+    		there and add the remainder.	*/
         (*size) = ((*size) << 7) + (byte_seq[byte_cnt]);
 
-        // Keep in mind, there was one more byte used at the end, so
-        // increment byte_cnt before returning.
+        /*	Account for the last byte.	*/
         return (++byte_cnt);
     }
     else
     {
-        // We exceeded the number of bytes that was allowed for the
-        // size. Return 0 to indicate an error.
+        /* 	We exceeded the number of bytes that was allowed for the
+        	size. Return 0 to indicate an error.	*/
         (*size) = 0;
         return 0;
     }
 }
 
-/*
-    Function: int midi_parse_getEvent(unsigned char buffer *, int buffer_size, unsigned char * data);
-    Description:
-        Takes in a pointer to an unsigned buffer, an int unsigned buffer size,
-        and an unsigned char * to the actual data.
-        It returns the number of bytes that was necessary to read this particular
-        event-- usually in the range of three, maybe four bytes.
-
-*/
+/**
+ *	Walks through a given buffer to find the size of the next MIDI event.
+ *	@param buffer An unsigned char buffer to write the MIDI event to.
+ *	@param buffer_size The size of the buffer.
+ *	@param byte_seq A pointer to the raw byte sequence that contains the MIDI events.
+ *	@return An integer representing how many bytes were written to the buffer; the size of the MIDI event in bytes.
+ *
+ */
 int midi_parse_getEvent(unsigned char * buffer, int buffer_size, unsigned char * byte_seq)
 {
     int byte_cntr = 0;
@@ -63,26 +74,35 @@ int midi_parse_getEvent(unsigned char * buffer, int buffer_size, unsigned char *
     switch(byte_seq[byte_cntr] >> 4)
     {
         case 0x8:
+        	/*	Note off, 3 bytes long	*/
         case 0x9:
+        	/*	Note on, 3 bytes long	*/
         case 0xA:
+        	/*	Polyphonic Key Pressure, 3 bytes long	*/
         case 0xB:
+        	/*	Controller Change, 3 bytes long	*/
         case 0xE:
-            // These events take up EXACTLY three bytes.
-            // That's exactly what we'll copy to the buffer.
+            /*	Pitch Bend, 3 bytes long	*/
             byte_cntr += 3;
             memcpy(buffer, byte_seq, byte_cntr);
             break;
+
+
+
         case 0xC:
+        	/*	Program Change, 2 bytes long	*/
         case 0xD:
+        	/*	Channel Key Pressure, 2 bytes long	*/
             byte_cntr += 2;
             memcpy(buffer, byte_seq, byte_cntr);
             break;
+
         case 0xF:
-            // Possibly a SYSEX event, or a META event
-            // We'll disambiguate here.
+        	/*	SYSEX event or META event	*/
             switch(byte_seq[byte_cntr])
             {
                 case 0xF0:
+                	/*	SYSEX (or SYSTEM EXCLUSIVE event)	*/
                 case 0xF7:
                     // This is a SYSEX event, meaning that there is a variable
                     // length of bytes that need to be read.
@@ -109,45 +129,34 @@ int midi_parse_getEvent(unsigned char * buffer, int buffer_size, unsigned char *
                     }
                     break;
                 case 0xFF:
+                	/*	META Event
+
+                	  	A META Event will always take on the following form:
+                	 	FF <type> <length> <data>
+                	 		type - A single byte, from the range 00-7F
+                	 		length - variable length as always
+                	 		data - zero or more bytes of data
+
+                	 	For size calculations the type doesn't matter.
+                	 */
                     // This is a META event.
                     // Will handle this later!
-                    byte_cntr += 1;
-                    switch(byte_seq[byte_cntr])
-                    {
-                        case 0x2F:
-                            // This signifies the end of the track
-                            // Force a return of 0.
-                            byte_cntr = 0;
-                            break;
-                        case 0x00:
-                        case 0x01:
-                        case 0x02:
-                        case 0x03:
-                        case 0x04:
-                        case 0x05:
-                        case 0x06:
-                        case 0x07:
-                        case 0x20:
-                        case 0x51:
-                        case 0x54:
-                        case 0x58:
-                        case 0x59:
-                        case 0x7F:
-                        default:
-                            byte_cntr += 1;
-                            int sizeOfEVNT = 0;
-                            int byte_cntr_EVNTsize = midi_parse_varSize(&byte_seq[byte_cntr], &sizeOfEVNT);
-                            if (sizeOfEVNT)
-                            {
-                                byte_cntr += byte_cntr_EVNTsize + sizeOfEVNT;
-                                memcpy(buffer, byte_seq, byte_cntr);
-                            }
-                            else
-                            {
-                                byte_cntr = 0;
-                            }
-                            break;
-                    }
+                    byte_cntr += 1;	/*	Add one for the 0xFF byte	*/
+                    byte_cntr += 1;	/*	Add one for the type byte	*/
+
+                    int sizeOfEVNT;
+					int byte_cntr_EVNTsize = midi_parse_varSize(&byte_seq[byte_cntr], &sizeOfEVNT);
+					if (byte_cntr_EVNTsize)
+					{
+						byte_cntr += (byte_cntr_EVNTsize + sizeOfEVNT);
+						memcpy(buffer, byte_seq, byte_cntr);
+					}
+					else
+					{
+						byte_cntr = 0;
+					}
+					break;
+
             }
             break;
 

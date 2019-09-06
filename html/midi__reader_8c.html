@@ -109,8 +109,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>test_file_if_midi</b> 
 <tr class="separator:a87d588803681a4b26ffba7d3d3804786"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19263d0508183abfc2edc0aa86938524"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="midi__reader_8c.html#a19263d0508183abfc2edc0aa86938524">parse_hex_size</a> (unsigned char *header, int size)</td></tr>
 <tr class="separator:a19263d0508183abfc2edc0aa86938524"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81fdd01b68a3e2e059e7896e67fc8a81"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="midi__reader_8c.html#a81fdd01b68a3e2e059e7896e67fc8a81">freeBlocks</a> (struct <a class="el" href="structMIDIBlock.html">MIDIBlock</a> **midiBlocks, int number_of_blocks)</td></tr>
-<tr class="memdesc:a81fdd01b68a3e2e059e7896e67fc8a81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a MIDI file, loads all MIDI blocks into memory.  <a href="#a81fdd01b68a3e2e059e7896e67fc8a81">More...</a><br /></td></tr>
+<tr class="memitem:a81fdd01b68a3e2e059e7896e67fc8a81"><td class="memItemLeft" align="right" valign="top"><a id="a81fdd01b68a3e2e059e7896e67fc8a81"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>freeBlocks</b> (struct <a class="el" href="structMIDIBlock.html">MIDIBlock</a> **midiBlocks, int number_of_blocks)</td></tr>
 <tr class="separator:a81fdd01b68a3e2e059e7896e67fc8a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -171,45 +171,6 @@ FILE *&#160;</td><td class="memItemRight" valign="bottom"><b>midi_file_input</b>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a81fdd01b68a3e2e059e7896e67fc8a81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81fdd01b68a3e2e059e7896e67fc8a81">&#9670;&nbsp;</a></span>freeBlocks()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int freeBlocks </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="structMIDIBlock.html">MIDIBlock</a> **&#160;</td>
-          <td class="paramname"><em>midiBlocks</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>number_of_blocks</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Given a MIDI file, loads all MIDI blocks into memory. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">file</td><td>A pointer to a MIDI file. </td></tr>
-    <tr><td class="paramname">midiBlocks</td><td>A pointer to an array of struct <a class="el" href="structMIDIBlock.html">MIDIBlock</a>. This will contain the output of the function, in the form of an array. </td></tr>
-    <tr><td class="paramname">size</td><td>A pointer to an integer, representing the size of the outputted midiBlocks array. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A success (0) or failure (positive) integer. </dd></dl>
 
 </div>
 </div>

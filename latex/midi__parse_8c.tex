@@ -13,11 +13,9 @@ Include dependency graph for midi\+\_\+parse.\+c\+:\nopagebreak
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{midi__parse_8c_a8491807f9c5bcbb50e811c5ffa8a5904}\label{midi__parse_8c_a8491807f9c5bcbb50e811c5ffa8a5904}} 
-int {\bfseries midi\+\_\+parse\+\_\+var\+Size} (unsigned char $\ast$byte\+\_\+seq, int $\ast$size)
-\item 
-\mbox{\Hypertarget{midi__parse_8c_a2d1bf73eef5ea76d1a5081d84f12c421}\label{midi__parse_8c_a2d1bf73eef5ea76d1a5081d84f12c421}} 
-int {\bfseries midi\+\_\+parse\+\_\+get\+Event} (unsigned char $\ast$buffer, int buffer\+\_\+size, unsigned char $\ast$byte\+\_\+seq)
+int \hyperlink{midi__parse_8c_a8491807f9c5bcbb50e811c5ffa8a5904}{midi\+\_\+parse\+\_\+var\+Size} (unsigned char $\ast$byte\+\_\+seq, int $\ast$size)
+\begin{DoxyCompactList}\small\item\em Given a byte sequence, calculate the variable length size represented in this chunk. \end{DoxyCompactList}\item 
+int \hyperlink{midi__parse_8c_a2d1bf73eef5ea76d1a5081d84f12c421}{midi\+\_\+parse\+\_\+get\+Event} (unsigned char $\ast$buffer, int buffer\+\_\+size, unsigned char $\ast$byte\+\_\+seq)
 \item 
 \mbox{\Hypertarget{midi__parse_8c_ae4b70a61b22bd276134494587b7895df}\label{midi__parse_8c_ae4b70a61b22bd276134494587b7895df}} 
 int {\bfseries midi\+\_\+parse\+\_\+event\+Type} (unsigned char $\ast$byte\+\_\+seq, unsigned char $\ast$buffer)
@@ -29,3 +27,43 @@ unsigned char $\ast$ {\bfseries midi\+\_\+print\+Bytes} (unsigned char $\ast$byt
 
 \subsection{Detailed Description}
 Responsible for all implementations regarding parsing a M\+I\+DI file and its components. This includes building and allocating the individual blocks themselves, the size of the individual blocks, etc. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{midi__parse_8c_a2d1bf73eef5ea76d1a5081d84f12c421}\label{midi__parse_8c_a2d1bf73eef5ea76d1a5081d84f12c421}} 
+\index{midi\+\_\+parse.\+c@{midi\+\_\+parse.\+c}!midi\+\_\+parse\+\_\+get\+Event@{midi\+\_\+parse\+\_\+get\+Event}}
+\index{midi\+\_\+parse\+\_\+get\+Event@{midi\+\_\+parse\+\_\+get\+Event}!midi\+\_\+parse.\+c@{midi\+\_\+parse.\+c}}
+\subsubsection{\texorpdfstring{midi\+\_\+parse\+\_\+get\+Event()}{midi\_parse\_getEvent()}}
+{\footnotesize\ttfamily int midi\+\_\+parse\+\_\+get\+Event (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{buffer,  }\item[{int}]{buffer\+\_\+size,  }\item[{unsigned char $\ast$}]{byte\+\_\+seq }\end{DoxyParamCaption})}
+
+Walks through a given buffer to find the size of the next M\+I\+DI event. 
+\begin{DoxyParams}{Parameters}
+{\em buffer} & An unsigned char buffer to write the M\+I\+DI event to. \\
+\hline
+{\em buffer\+\_\+size} & The size of the buffer. \\
+\hline
+{\em byte\+\_\+seq} & A pointer to the raw byte sequence that contains the M\+I\+DI events. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+An integer representing how many bytes were written to the buffer; the size of the M\+I\+DI event in bytes. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{midi__parse_8c_a8491807f9c5bcbb50e811c5ffa8a5904}\label{midi__parse_8c_a8491807f9c5bcbb50e811c5ffa8a5904}} 
+\index{midi\+\_\+parse.\+c@{midi\+\_\+parse.\+c}!midi\+\_\+parse\+\_\+var\+Size@{midi\+\_\+parse\+\_\+var\+Size}}
+\index{midi\+\_\+parse\+\_\+var\+Size@{midi\+\_\+parse\+\_\+var\+Size}!midi\+\_\+parse.\+c@{midi\+\_\+parse.\+c}}
+\subsubsection{\texorpdfstring{midi\+\_\+parse\+\_\+var\+Size()}{midi\_parse\_varSize()}}
+{\footnotesize\ttfamily int midi\+\_\+parse\+\_\+var\+Size (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{byte\+\_\+seq,  }\item[{int $\ast$}]{size }\end{DoxyParamCaption})}
+
+
+
+Given a byte sequence, calculate the variable length size represented in this chunk. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em byte\+\_\+seq} & Byte sequence representing a variable length number. \\
+\hline
+{\em size} & Pointer to an int, will be where the variable length size is in binary. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Integer representing the number of bytes read. 
+\end{DoxyReturn}

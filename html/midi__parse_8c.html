@@ -82,11 +82,10 @@ Include dependency graph for midi_parse.c:</div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a8491807f9c5bcbb50e811c5ffa8a5904"><td class="memItemLeft" align="right" valign="top"><a id="a8491807f9c5bcbb50e811c5ffa8a5904"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>midi_parse_varSize</b> (unsigned char *byte_seq, int *size)</td></tr>
+<tr class="memitem:a8491807f9c5bcbb50e811c5ffa8a5904"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="midi__parse_8c.html#a8491807f9c5bcbb50e811c5ffa8a5904">midi_parse_varSize</a> (unsigned char *byte_seq, int *size)</td></tr>
+<tr class="memdesc:a8491807f9c5bcbb50e811c5ffa8a5904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a byte sequence, calculate the variable length size represented in this chunk.  <a href="#a8491807f9c5bcbb50e811c5ffa8a5904">More...</a><br /></td></tr>
 <tr class="separator:a8491807f9c5bcbb50e811c5ffa8a5904"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d1bf73eef5ea76d1a5081d84f12c421"><td class="memItemLeft" align="right" valign="top"><a id="a2d1bf73eef5ea76d1a5081d84f12c421"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>midi_parse_getEvent</b> (unsigned char *buffer, int buffer_size, unsigned char *byte_seq)</td></tr>
+<tr class="memitem:a2d1bf73eef5ea76d1a5081d84f12c421"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="midi__parse_8c.html#a2d1bf73eef5ea76d1a5081d84f12c421">midi_parse_getEvent</a> (unsigned char *buffer, int buffer_size, unsigned char *byte_seq)</td></tr>
 <tr class="separator:a2d1bf73eef5ea76d1a5081d84f12c421"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4b70a61b22bd276134494587b7895df"><td class="memItemLeft" align="right" valign="top"><a id="ae4b70a61b22bd276134494587b7895df"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>midi_parse_eventType</b> (unsigned char *byte_seq, unsigned char *buffer)</td></tr>
@@ -97,7 +96,89 @@ unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><b>midi_print
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Responsible for all implementations regarding parsing a MIDI file and its components. This includes building and allocating the individual blocks themselves, the size of the individual blocks, etc. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a2d1bf73eef5ea76d1a5081d84f12c421"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d1bf73eef5ea76d1a5081d84f12c421">&#9670;&nbsp;</a></span>midi_parse_getEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int midi_parse_getEvent </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>buffer_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>byte_seq</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Walks through a given buffer to find the size of the next MIDI event. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>An unsigned char buffer to write the MIDI event to. </td></tr>
+    <tr><td class="paramname">buffer_size</td><td>The size of the buffer. </td></tr>
+    <tr><td class="paramname">byte_seq</td><td>A pointer to the raw byte sequence that contains the MIDI events. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An integer representing how many bytes were written to the buffer; the size of the MIDI event in bytes. </dd></dl>
+
+</div>
+</div>
+<a id="a8491807f9c5bcbb50e811c5ffa8a5904"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8491807f9c5bcbb50e811c5ffa8a5904">&#9670;&nbsp;</a></span>midi_parse_varSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int midi_parse_varSize </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>byte_seq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Given a byte sequence, calculate the variable length size represented in this chunk. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">byte_seq</td><td>Byte sequence representing a variable length number. </td></tr>
+    <tr><td class="paramname">size</td><td>Pointer to an int, will be where the variable length size is in binary. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Integer representing the number of bytes read. </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

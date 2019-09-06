@@ -3,20 +3,16 @@
 */
 
 /*	Library header includes	*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include <time.h>
+#include <portable.h>
 
 /*	Program header includes	*/
 #include "main.h"
 #include "midi_reader.h"
 #include "midi_parse.h"
 #include "debug.h"
+
+/**/
+//#define TESTS
 
 // Structs
 struct MIDIBlockStatus
@@ -45,7 +41,8 @@ int updateDeltaTimePos(struct MIDIBlock * midiBlock);
 int parse_args(int argc, char * argv[], struct main_params * params)
 {
     /*  Internal counter for us to keep track of
-        which argument we're processing.    */
+        which argument we're processing. Note that argv[0]
+        is the name of the program itself: hence, we start at 1.    */
     int cntr = 1;
 
     /*  Internal flag that simply tells us whether or not
@@ -103,6 +100,40 @@ int parse_args(int argc, char * argv[], struct main_params * params)
 */
 int main(int argc, char * argv[])
 {
+#ifdef TESTS
+	printf("midi_parse_varSize tests: \n");
+
+	unsigned char test_one[] = {0x7F};
+	unsigned char test_two[] = {0x81, 0x00};
+	unsigned char test_three[] = {0xFF, 0x7F};
+	unsigned char test_four[] = {0x87, 0x68};
+	unsigned char test_five[] = {0xBD, 0x84, 0x40};
+
+	int res1 = 0;
+	int res2 = 0;
+	int res3 = 0;
+	int res4 = 0;
+	int res5 = 0;
+
+	//	asdf
+	midi_parse_varSize(test_one, &res1);
+	midi_parse_varSize(test_two, &res2);
+	midi_parse_varSize(test_three, &res3);
+	midi_parse_varSize(test_four, &res4);
+	midi_parse_varSize(test_five, &res5);
+
+	printf("Test #1: %d\tTest #2: %d\tTest #3: %d\tTest #4: %d\tTest #5: %d\n",
+			res1, res2, res3, res4, res5);
+
+
+
+
+
+
+	exit(0);
+#endif
+
+
     /*  File/descriptor for MIDI file and device output */
     struct main_params params;
 
@@ -172,20 +203,22 @@ int main(int argc, char * argv[])
 		clock_t startTime = clock();
 
 		int block_iter = 0;
-		for (block_iter = 0; block_iter < 2/*midiFile.num_blocks*/; block_iter++)
+		for (block_iter = 0; block_iter < midiFile.num_blocks; block_iter++)
 		{
+			/*	Grab the current MIDIBlock from the array.	*/
 			struct MIDIBlock * currentBlock = &(midiFile.blockArr[block_iter]);
 
-			printf("BYTES for BLOCK #%d: ", block_iter);
+			printf("BLOCK #%d, BYTES at POSITION [%d-%d): ", block_iter, currentBlock->nCurrentPos, currentBlock->nCurrentPos+16);
 			for (int i = 0; i < 15; i++)
 			{
-				printf("%02x ", currentBlock->data[i]);
+				printf("%02x ", currentBlock->data[currentBlock->nCurrentPos + i]);
 			}
 			printf("\n");
 			if (currentBlock->bActive)
 			{
-				DEBUG("This is an active track.\n");
-				/*	This is a playable track	*/
+				/*	This is an active track	*/
+				//DEBUG("This is an active track.\n");
+
 				/*	Continuously play notes until we hit something that asks
 					for a delay	*/
 				while (currentBlock->bActive && currentBlock->nDeltaTicks <= 0)
@@ -201,7 +234,7 @@ int main(int argc, char * argv[])
 
 					currentBlock->nCurrentPos += bytes_read;
 					currentBlock->bActive = (currentBlock->nCurrentPos < currentBlock->n_data_size);
-					//if (!currentBlock->bActive) break;
+					if (!currentBlock->bActive) break;
 
 
 					/*	Write the next event to the device, if it exists	*/
@@ -223,9 +256,13 @@ int main(int argc, char * argv[])
 				}
 				currentBlock->nDeltaTicks--;
 			}
+			else
+			{
+				DEBUG("--> Track is INACTIVE.\n");
+			}
 		}
 
-		while ( (double) (clock() - startTime) < 100000);
+		while ( (double) (clock() - startTime) < 10);
 	}
 
 

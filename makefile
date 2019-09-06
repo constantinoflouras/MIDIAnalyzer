@@ -19,7 +19,6 @@ LDLIBS += -lm
 all: $(EXE)
 
 $(EXE): $(OBJ)
-	doxygen doxygenConfig
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 
@@ -28,3 +27,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 clean:
 	$(RM) $(OBJ)
+
+doxygen:
+	doxygen doxygenConfig

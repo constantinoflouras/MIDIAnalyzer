@@ -136,7 +136,7 @@ struct MIDIFile convert_ll_to_MIDIFile(struct MIDIBlockNode * list)
 		through it at least once, to calculate how big the array needs to be	*/
 	struct MIDIBlockNode * iter = list;
 	ret.num_blocks = 0;
-	DEBUG("Count number of blocks in this list.\n");
+
 	while(iter != NULL)
 	{
 		ret.num_blocks += 1;
@@ -156,6 +156,7 @@ struct MIDIFile convert_ll_to_MIDIFile(struct MIDIBlockNode * list)
 		memcpy(&(ret.blockArr[cntr]), &(prev->midiBlock), sizeof(struct MIDIBlock));
 		free(prev);
 	}
+
 	return ret;
 }
 
@@ -265,7 +266,6 @@ int test_file_if_midi(FILE * file)
 
     char mthd_indicator[4];                                                     // Now, we should read the first four bytes of the file and see if it matches
     int bytes_read = fread(&mthd_indicator[0], 1, 4, file);                     // with the following: MThd.
-    if (bytes_read);
 
     returnStatus = (strncmp("MThd", mthd_indicator, 4) == 0) ? 1 : 0;           // We'll go ahead and compare the first four bytes of the file to what should be
     fseek(file, origFilePosition, SEEK_SET);
@@ -317,16 +317,6 @@ int parse_hex_size(unsigned char * header, int size)
 
 
 
-/*!
-    \brief Given a MIDI file, loads all MIDI blocks into memory.
-
-    @param file A pointer to a MIDI file.
-    @param midiBlocks A pointer to an array of struct MIDIBlock.
-        This will contain the output of the function, in the form of an array.
-    @param size A pointer to an integer, representing the size of the outputted
-        midiBlocks array.
-    @return A success (0) or failure (positive) integer.
-*/
 /*
 int grab_midi_blocks(FILE * file, struct MIDIBlock * midiBlocks[], int * size)
 {

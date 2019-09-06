@@ -35,8 +35,9 @@ int {\bfseries test\+\_\+file\+\_\+if\+\_\+midi} (F\+I\+LE $\ast$file)
 \item 
 int \hyperlink{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}{parse\+\_\+hex\+\_\+size} (unsigned char $\ast$header, int size)
 \item 
-int \hyperlink{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}{free\+Blocks} (struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$$\ast$midi\+Blocks, int number\+\_\+of\+\_\+blocks)
-\begin{DoxyCompactList}\small\item\em Given a M\+I\+DI file, loads all M\+I\+DI blocks into memory. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\mbox{\Hypertarget{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}\label{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}} 
+int {\bfseries free\+Blocks} (struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$$\ast$midi\+Blocks, int number\+\_\+of\+\_\+blocks)
+\end{DoxyCompactItemize}
 \subsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
@@ -81,28 +82,6 @@ Converts a M\+I\+D\+I\+Block\+Node-\/based linked list into a fixed-\/sized arra
 {\em list} & pointer to the first node of the linked list containing the \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}\label{midi__reader_8c_a81fdd01b68a3e2e059e7896e67fc8a81}} 
-\index{midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}!free\+Blocks@{free\+Blocks}}
-\index{free\+Blocks@{free\+Blocks}!midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}}
-\subsubsection{\texorpdfstring{free\+Blocks()}{freeBlocks()}}
-{\footnotesize\ttfamily int free\+Blocks (\begin{DoxyParamCaption}\item[{struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block} $\ast$$\ast$}]{midi\+Blocks,  }\item[{int}]{number\+\_\+of\+\_\+blocks }\end{DoxyParamCaption})}
-
-
-
-Given a M\+I\+DI file, loads all M\+I\+DI blocks into memory. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em file} & A pointer to a M\+I\+DI file. \\
-\hline
-{\em midi\+Blocks} & A pointer to an array of struct \hyperlink{structMIDIBlock}{M\+I\+D\+I\+Block}. This will contain the output of the function, in the form of an array. \\
-\hline
-{\em size} & A pointer to an integer, representing the size of the outputted midi\+Blocks array. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-A success (0) or failure (positive) integer. 
-\end{DoxyReturn}
 \mbox{\Hypertarget{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}\label{midi__reader_8c_a19263d0508183abfc2edc0aa86938524}} 
 \index{midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}!parse\+\_\+hex\+\_\+size@{parse\+\_\+hex\+\_\+size}}
 \index{parse\+\_\+hex\+\_\+size@{parse\+\_\+hex\+\_\+size}!midi\+\_\+reader.\+c@{midi\+\_\+reader.\+c}}
